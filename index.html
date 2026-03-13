@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C4Nav - USV Autonomous Navigation Project</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; line-height: 1.6; color: #2c3e50; }
+
+    .hero { background: linear-gradient(135deg, #004a99 0%, #0077cc 50%, #00a3cc 100%);
+            color: white; text-align: center; padding: 4rem 2rem 3rem; }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .hero p { font-size: 1.1rem; opacity: 0.9; max-width: 700px; margin: 0 auto 1.5rem; }
+    .hero .badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+    .hero .badges img { height: 24px; }
+
+    .nav-pills { display: flex; justify-content: center; gap: 0.6rem; padding: 1rem; background: #fff;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
+    .nav-pills a { padding: 0.4rem 1.2rem; border-radius: 20px; text-decoration: none; color: #004a99;
+                   font-weight: 600; border: 2px solid transparent; transition: all 0.2s; }
+    .nav-pills a:hover { background: #e8f4fd; }
+    .nav-pills a.active { background: #004a99; color: white; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .section { margin-bottom: 3rem; }
+    .section h2 { font-size: 1.5rem; color: #004a99; margin-bottom: 1rem;
+                  padding-bottom: 0.5rem; border-bottom: 3px solid #e8f4fd; }
+    .section h3 { font-size: 1.1rem; color: #2c3e50; margin: 1rem 0 0.5rem; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
+    .card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border-left: 4px solid #004a99; transition: transform 0.2s; }
+    .card:hover { transform: translateY(-2px); }
+    .card h3 { color: #004a99; margin-bottom: 0.3rem; font-size: 1rem; }
+    .card p { font-size: 0.9rem; color: #555; }
+
+    .results-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    .results-table th { background: #004a99; color: white; padding: 0.7rem; }
+    .results-table td { padding: 0.6rem; text-align: center; border-bottom: 1px solid #eee; }
+    .results-table tr:hover { background: #f0f8ff; }
+    .best { color: #e74c3c; font-weight: 700; }
+
+    .repo-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 2rem 0; }
+    .repo-links a { display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.5rem;
+                    border: 2px solid #004a99; border-radius: 10px; text-decoration: none;
+                    color: #004a99; font-weight: 600; transition: all 0.2s; }
+    .repo-links a:hover { background: #004a99; color: white; }
+    .repo-links .current { background: #004a99; color: white; }
+
+    .highlight-box { background: linear-gradient(135deg, #e8f4fd, #f0f8ff); border-radius: 12px;
+                     padding: 1.5rem; margin: 1rem 0; border: 1px solid #b3d9f2; }
+
+    .fig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .fig-row img { width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .fig-caption { text-align: center; font-size: 0.8rem; color: #888; margin-top: 0.3rem; }
+
+    footer { text-align: center; padding: 2rem; background: #f5f7fa; color: #999; font-size: 0.85rem; border-top: 1px solid #eee; }
+
+    @media (max-width: 600px) { .hero h1 { font-size: 1.6rem; } .fig-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>C4Nav</h1>
+  <p>Improved Dueling Double DQN with Prioritized Experience Replay and Reward Shaping for USV Autonomous Navigation</p>
+  <div class="badges">
+    <img src="https://img.shields.io/badge/Python-3.10-3776AB?style=flat-square&logo=python&logoColor=white" />
+    <img src="https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=flat-square&logo=pytorch&logoColor=white" />
+    <img src="https://img.shields.io/badge/GitHub%20Actions-CI-2088FF?style=flat-square&logo=githubactions&logoColor=white" />
+    <img src="https://img.shields.io/badge/ID3QN-83%25%20SR-e74c3c?style=flat-square" />
+  </div>
+</div>
+
+<!-- Nav -->
+<div class="nav-pills">
+  <a href="#overview" class="active">Overview</a>
+  <a href="#method">Method</a>
+  <a href="#results">Results</a>
+  <a href="#repos">Repos</a>
+</div>
+
+<div class="container">
+
+  <!-- Overview -->
+  <div class="section" id="overview">
+    <h2>Project Overview</h2>
+    <div class="highlight-box">
+      <p>This project proposes an <strong>Improved Dueling Double DQN (ID3QN)</strong> algorithm for unmanned surface vehicle (USV) autonomous navigation in the <strong>C4 Intelligent Ship Competition</strong> scenario. ID3QN integrates prioritized experience replay, composite reward shaping, soft target updates, and learning rate scheduling, achieving <strong>83% success rate</strong> in a randomized obstacle environment.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card"><h3>Simulation</h3><p>20m x 20m water area, 3-5 random obstacles, 180-ray LiDAR, 184-dim state space, 5 discrete actions</p></div>
+      <div class="card"><h3>Algorithms</h3><p>4 progressive variants: DQN -> DDQN -> D3QN -> ID3QN, enabling systematic comparison</p></div>
+      <div class="card"><h3>Training</h3><p>2000 episodes with GitHub Actions CI/CD, fully reproducible with configurable seeds</p></div>
+      <div class="card"><h3>Paper</h3><p>IEEE Transactions format, 5 sections, 8 figures, 14 tables, 20 references</p></div>
+    </div>
+  </div>
+
+  <!-- Method -->
+  <div class="section" id="method">
+    <h2>ID3QN Algorithm</h2>
+    <h3>Key Improvements over D3QN</h3>
+    <div class="card-grid">
+      <div class="card" style="border-left-color:#e74c3c"><h3>Prioritized Replay</h3><p>SumTree-based PER with O(log N) sampling. High TD-error transitions replayed more frequently. IS weight annealing (beta: 0.4->1.0).</p></div>
+      <div class="card" style="border-left-color:#2ecc71"><h3>Reward Shaping</h3><p>3-component dense reward: distance progress + heading alignment + safety penalty. Transforms sparse C4 signals into continuous guidance.</p></div>
+      <div class="card" style="border-left-color:#3498db"><h3>Soft Update</h3><p>Polyak averaging (tau=0.005) replaces hard copy. Smoother target network transitions reduce value oscillation.</p></div>
+      <div class="card" style="border-left-color:#f39c12"><h3>LR Scheduling</h3><p>StepLR decay: halve every 500 episodes. Fast exploration early, fine-tuning later. Huber loss + gradient clipping.</p></div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="section" id="results">
+    <h2>Experimental Results</h2>
+    <table class="results-table">
+      <thead><tr><th>Algorithm</th><th>Success Rate</th><th>Avg Reward</th><th>Avg Steps</th><th>Conv. Episode</th></tr></thead>
+      <tbody>
+        <tr><td>DQN (Baseline)</td><td>20.0%</td><td>-57.4</td><td>275</td><td>N/A</td></tr>
+        <tr><td>Double DQN</td><td>4.0%</td><td>-101.4</td><td>115</td><td>N/A</td></tr>
+        <tr><td>D3QN</td><td>2.0%</td><td>-101.2</td><td>163</td><td>N/A</td></tr>
+        <tr><td><strong>ID3QN (Ours)</strong></td><td class="best">83.0%</td><td class="best">84.0</td><td class="best">86</td><td class="best">294</td></tr>
+      </tbody>
+    </table>
+    <div class="fig-row">
+      <div><img src="https://raw.githubusercontent.com/Zebedee2021/c4nav-data/main/figures/fig5_training_curves.png" alt="Training Curves"><div class="fig-caption">Fig.5 Training Curves</div></div>
+      <div><img src="https://raw.githubusercontent.com/Zebedee2021/c4nav-data/main/figures/fig7_trajectories.png" alt="Trajectories"><div class="fig-caption">Fig.7 Trajectory Comparison</div></div>
+    </div>
+    <p style="text-align:center;margin-top:1rem;"><a href="https://Zebedee2021.github.io/c4nav-demo/" style="color:#004a99;font-weight:600;">View interactive demo with all 8 figures &rarr;</a></p>
+  </div>
+
+  <!-- Repos -->
+  <div class="section" id="repos">
+    <h2>Repository Navigation</h2>
+    <div class="repo-links">
+      <a href="https://Zebedee2021.github.io/c4nav-site/" class="current">c4nav-site (here)</a>
+      <a href="https://Zebedee2021.github.io/c4nav-demo/">c4nav-demo</a>
+      <a href="https://github.com/Zebedee2021/c4nav-core">c4nav-core</a>
+      <a href="https://github.com/Zebedee2021/c4nav-data">c4nav-data</a>
+    </div>
+    <div class="card-grid">
+      <div class="card"><h3>c4nav-site</h3><p>Project homepage with academic & product views. Deployed on GitHub Pages.</p></div>
+      <div class="card"><h3>c4nav-demo</h3><p>Interactive ECharts visualizations of training results and paper figures.</p></div>
+      <div class="card"><h3>c4nav-core</h3><p>Core algorithms, environment, training scripts, and GitHub Actions CI workflows. Private repo.</p></div>
+      <div class="card"><h3>c4nav-data</h3><p>Training logs, model weights, and 300dpi paper figures. Auto-updated by CI.</p></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>C4Nav &copy; 2026 | Improved D3QN for USV Autonomous Navigation | Built with GitHub Pages</footer>
+</body>
+</html>
