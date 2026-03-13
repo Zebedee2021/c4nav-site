@@ -9,11 +9,18 @@
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; line-height: 1.6; color: #2c3e50; }
 
     .hero { background: linear-gradient(135deg, #004a99 0%, #0077cc 50%, #00a3cc 100%);
-            color: white; text-align: center; padding: 4rem 2rem 3rem; }
+            color: white; text-align: center; padding: 4rem 2rem 3rem; position: relative; }
     .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
     .hero p { font-size: 1.1rem; opacity: 0.9; max-width: 700px; margin: 0 auto 1.5rem; }
     .hero .badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
     .hero .badges img { height: 24px; }
+
+    .lang-switch { position: absolute; top: 1rem; right: 1.5rem; display: flex; gap: 0;
+                   border-radius: 20px; overflow: hidden; border: 2px solid rgba(255,255,255,0.5); }
+    .lang-switch button { padding: 0.3rem 0.9rem; border: none; cursor: pointer; font-size: 0.85rem;
+                          font-weight: 600; transition: all 0.2s; background: transparent; color: rgba(255,255,255,0.7); }
+    .lang-switch button.active { background: rgba(255,255,255,0.25); color: #fff; }
+    .lang-switch button:hover { color: #fff; }
 
     .nav-pills { display: flex; justify-content: center; gap: 0.6rem; padding: 1rem; background: #fff;
                   box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
@@ -58,15 +65,19 @@
 
     footer { text-align: center; padding: 2rem; background: #f5f7fa; color: #999; font-size: 0.85rem; border-top: 1px solid #eee; }
 
-    @media (max-width: 600px) { .hero h1 { font-size: 1.6rem; } .fig-row { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { .hero h1 { font-size: 1.6rem; } .fig-row { grid-template-columns: 1fr; } .lang-switch { top: 0.5rem; right: 0.5rem; } }
   </style>
 </head>
 <body>
 
 <!-- Hero -->
 <div class="hero">
+  <div class="lang-switch">
+    <button id="btn-zh" class="active" onclick="switchLang('zh')">CN</button>
+    <button id="btn-en" onclick="switchLang('en')">EN</button>
+  </div>
   <h1>C4Nav</h1>
-  <p>Improved Dueling Double DQN with Prioritized Experience Replay and Reward Shaping for USV Autonomous Navigation</p>
+  <p data-i18n="hero-desc">Improved Dueling Double DQN with Prioritized Experience Replay and Reward Shaping for USV Autonomous Navigation</p>
   <div class="badges">
     <img src="https://img.shields.io/badge/Python-3.10-3776AB?style=flat-square&logo=python&logoColor=white" />
     <img src="https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=flat-square&logo=pytorch&logoColor=white" />
@@ -77,78 +88,163 @@
 
 <!-- Nav -->
 <div class="nav-pills">
-  <a href="#overview" class="active">Overview</a>
-  <a href="#method">Method</a>
-  <a href="#results">Results</a>
-  <a href="#repos">Repos</a>
+  <a href="#overview" class="active" data-i18n="nav-overview">Overview</a>
+  <a href="#method" data-i18n="nav-method">Method</a>
+  <a href="#results" data-i18n="nav-results">Results</a>
+  <a href="#repos" data-i18n="nav-repos">Repos</a>
 </div>
 
 <div class="container">
 
   <!-- Overview -->
   <div class="section" id="overview">
-    <h2>Project Overview</h2>
+    <h2 data-i18n="sec-overview">Project Overview</h2>
     <div class="highlight-box">
-      <p>This project proposes an <strong>Improved Dueling Double DQN (ID3QN)</strong> algorithm for unmanned surface vehicle (USV) autonomous navigation in the <strong>C4 Intelligent Ship Competition</strong> scenario. ID3QN integrates prioritized experience replay, composite reward shaping, soft target updates, and learning rate scheduling, achieving <strong>83% success rate</strong> in a randomized obstacle environment.</p>
+      <p data-i18n="overview-desc">This project proposes an <strong>Improved Dueling Double DQN (ID3QN)</strong> algorithm for unmanned surface vehicle (USV) autonomous navigation in the <strong>C4 Intelligent Ship Competition</strong> scenario. ID3QN integrates prioritized experience replay, composite reward shaping, soft target updates, and learning rate scheduling, achieving <strong>83% success rate</strong> in a randomized obstacle environment.</p>
     </div>
     <div class="card-grid">
-      <div class="card"><h3>Simulation</h3><p>20m x 20m water area, 3-5 random obstacles, 180-ray LiDAR, 184-dim state space, 5 discrete actions</p></div>
-      <div class="card"><h3>Algorithms</h3><p>4 progressive variants: DQN -> DDQN -> D3QN -> ID3QN, enabling systematic comparison</p></div>
-      <div class="card"><h3>Training</h3><p>2000 episodes with GitHub Actions CI/CD, fully reproducible with configurable seeds</p></div>
-      <div class="card"><h3>Paper</h3><p>IEEE Transactions format, 5 sections, 8 figures, 14 tables, 20 references</p></div>
+      <div class="card"><h3 data-i18n="card-sim-title">Simulation</h3><p data-i18n="card-sim-desc">20m x 20m water area, 3-5 random obstacles, 180-ray LiDAR, 184-dim state space, 5 discrete actions</p></div>
+      <div class="card"><h3 data-i18n="card-algo-title">Algorithms</h3><p data-i18n="card-algo-desc">4 progressive variants: DQN -> DDQN -> D3QN -> ID3QN, enabling systematic comparison</p></div>
+      <div class="card"><h3 data-i18n="card-train-title">Training</h3><p data-i18n="card-train-desc">2000 episodes with GitHub Actions CI/CD, fully reproducible with configurable seeds</p></div>
+      <div class="card"><h3 data-i18n="card-paper-title">Paper</h3><p data-i18n="card-paper-desc">IEEE Transactions format, 5 sections, 8 figures, 14 tables, 20 references</p></div>
     </div>
   </div>
 
   <!-- Method -->
   <div class="section" id="method">
-    <h2>ID3QN Algorithm</h2>
-    <h3>Key Improvements over D3QN</h3>
+    <h2 data-i18n="sec-method">ID3QN Algorithm</h2>
+    <h3 data-i18n="method-sub">Key Improvements over D3QN</h3>
     <div class="card-grid">
-      <div class="card" style="border-left-color:#e74c3c"><h3>Prioritized Replay</h3><p>SumTree-based PER with O(log N) sampling. High TD-error transitions replayed more frequently. IS weight annealing (beta: 0.4->1.0).</p></div>
-      <div class="card" style="border-left-color:#2ecc71"><h3>Reward Shaping</h3><p>3-component dense reward: distance progress + heading alignment + safety penalty. Transforms sparse C4 signals into continuous guidance.</p></div>
-      <div class="card" style="border-left-color:#3498db"><h3>Soft Update</h3><p>Polyak averaging (tau=0.005) replaces hard copy. Smoother target network transitions reduce value oscillation.</p></div>
-      <div class="card" style="border-left-color:#f39c12"><h3>LR Scheduling</h3><p>StepLR decay: halve every 500 episodes. Fast exploration early, fine-tuning later. Huber loss + gradient clipping.</p></div>
+      <div class="card" style="border-left-color:#e74c3c"><h3 data-i18n="m-per-title">Prioritized Replay</h3><p data-i18n="m-per-desc">SumTree-based PER with O(log N) sampling. High TD-error transitions replayed more frequently. IS weight annealing (beta: 0.4->1.0).</p></div>
+      <div class="card" style="border-left-color:#2ecc71"><h3 data-i18n="m-rs-title">Reward Shaping</h3><p data-i18n="m-rs-desc">3-component dense reward: distance progress + heading alignment + safety penalty. Transforms sparse C4 signals into continuous guidance.</p></div>
+      <div class="card" style="border-left-color:#3498db"><h3 data-i18n="m-su-title">Soft Update</h3><p data-i18n="m-su-desc">Polyak averaging (tau=0.005) replaces hard copy. Smoother target network transitions reduce value oscillation.</p></div>
+      <div class="card" style="border-left-color:#f39c12"><h3 data-i18n="m-lr-title">LR Scheduling</h3><p data-i18n="m-lr-desc">StepLR decay: halve every 500 episodes. Fast exploration early, fine-tuning later. Huber loss + gradient clipping.</p></div>
     </div>
   </div>
 
   <!-- Results -->
   <div class="section" id="results">
-    <h2>Experimental Results</h2>
+    <h2 data-i18n="sec-results">Experimental Results</h2>
     <table class="results-table">
-      <thead><tr><th>Algorithm</th><th>Success Rate</th><th>Avg Reward</th><th>Avg Steps</th><th>Conv. Episode</th></tr></thead>
+      <thead><tr>
+        <th data-i18n="th-algo">Algorithm</th>
+        <th data-i18n="th-sr">Success Rate</th>
+        <th data-i18n="th-reward">Avg Reward</th>
+        <th data-i18n="th-steps">Avg Steps</th>
+        <th data-i18n="th-conv">Conv. Episode</th>
+      </tr></thead>
       <tbody>
-        <tr><td>DQN (Baseline)</td><td>20.0%</td><td>-57.4</td><td>275</td><td>N/A</td></tr>
-        <tr><td>Double DQN</td><td>4.0%</td><td>-101.4</td><td>115</td><td>N/A</td></tr>
+        <tr><td data-i18n="algo-dqn">DQN (Baseline)</td><td>20.0%</td><td>-57.4</td><td>275</td><td>N/A</td></tr>
+        <tr><td data-i18n="algo-ddqn">Double DQN</td><td>4.0%</td><td>-101.4</td><td>115</td><td>N/A</td></tr>
         <tr><td>D3QN</td><td>2.0%</td><td>-101.2</td><td>163</td><td>N/A</td></tr>
-        <tr><td><strong>ID3QN (Ours)</strong></td><td class="best">83.0%</td><td class="best">84.0</td><td class="best">86</td><td class="best">294</td></tr>
+        <tr><td><strong data-i18n="algo-ours">ID3QN (Ours)</strong></td><td class="best">83.0%</td><td class="best">84.0</td><td class="best">86</td><td class="best">294</td></tr>
       </tbody>
     </table>
     <div class="fig-row">
-      <div><img src="https://raw.githubusercontent.com/Zebedee2021/c4nav-data/main/figures/fig5_training_curves.png" alt="Training Curves"><div class="fig-caption">Fig.5 Training Curves</div></div>
-      <div><img src="https://raw.githubusercontent.com/Zebedee2021/c4nav-data/main/figures/fig7_trajectories.png" alt="Trajectories"><div class="fig-caption">Fig.7 Trajectory Comparison</div></div>
+      <div><img src="https://raw.githubusercontent.com/Zebedee2021/c4nav-data/main/figures/fig5_training_curves.png" alt="Training Curves"><div class="fig-caption" data-i18n="fig5">Fig.5 Training Curves</div></div>
+      <div><img src="https://raw.githubusercontent.com/Zebedee2021/c4nav-data/main/figures/fig7_trajectories.png" alt="Trajectories"><div class="fig-caption" data-i18n="fig7">Fig.7 Trajectory Comparison</div></div>
     </div>
-    <p style="text-align:center;margin-top:1rem;"><a href="https://Zebedee2021.github.io/c4nav-demo/" style="color:#004a99;font-weight:600;">View interactive demo with all 8 figures &rarr;</a></p>
+    <p style="text-align:center;margin-top:1rem;"><a href="https://Zebedee2021.github.io/c4nav-demo/" style="color:#004a99;font-weight:600;" data-i18n="link-demo">View interactive demo with all 8 figures &rarr;</a></p>
   </div>
 
   <!-- Repos -->
   <div class="section" id="repos">
-    <h2>Repository Navigation</h2>
+    <h2 data-i18n="sec-repos">Repository Navigation</h2>
     <div class="repo-links">
-      <a href="https://Zebedee2021.github.io/c4nav-site/" class="current">c4nav-site (here)</a>
-      <a href="https://Zebedee2021.github.io/c4nav-demo/">c4nav-demo</a>
-      <a href="https://github.com/Zebedee2021/c4nav-core">c4nav-core</a>
-      <a href="https://github.com/Zebedee2021/c4nav-data">c4nav-data</a>
+      <a href="https://Zebedee2021.github.io/c4nav-site/" class="current" data-i18n="repo-site">c4nav-site (here)</a>
+      <a href="https://Zebedee2021.github.io/c4nav-demo/" data-i18n="repo-demo">c4nav-demo</a>
+      <a href="https://github.com/Zebedee2021/c4nav-core" data-i18n="repo-core">c4nav-core</a>
+      <a href="https://github.com/Zebedee2021/c4nav-data" data-i18n="repo-data">c4nav-data</a>
     </div>
     <div class="card-grid">
-      <div class="card"><h3>c4nav-site</h3><p>Project homepage with academic & product views. Deployed on GitHub Pages.</p></div>
-      <div class="card"><h3>c4nav-demo</h3><p>Interactive ECharts visualizations of training results and paper figures.</p></div>
-      <div class="card"><h3>c4nav-core</h3><p>Core algorithms, environment, training scripts, and GitHub Actions CI workflows. Private repo.</p></div>
-      <div class="card"><h3>c4nav-data</h3><p>Training logs, model weights, and 300dpi paper figures. Auto-updated by CI.</p></div>
+      <div class="card"><h3>c4nav-site</h3><p data-i18n="repo-site-desc">Project homepage with academic & product views. Deployed on GitHub Pages.</p></div>
+      <div class="card"><h3>c4nav-demo</h3><p data-i18n="repo-demo-desc">Interactive ECharts visualizations of training results and paper figures.</p></div>
+      <div class="card"><h3>c4nav-core</h3><p data-i18n="repo-core-desc">Core algorithms, environment, training scripts, and GitHub Actions CI workflows. Private repo.</p></div>
+      <div class="card"><h3>c4nav-data</h3><p data-i18n="repo-data-desc">Training logs, model weights, and 300dpi paper figures. Auto-updated by CI.</p></div>
     </div>
   </div>
 
 </div>
 
-<footer>C4Nav &copy; 2026 | Improved D3QN for USV Autonomous Navigation | Built with GitHub Pages</footer>
+<footer data-i18n="footer">C4Nav &copy; 2026 | Improved D3QN for USV Autonomous Navigation | Built with GitHub Pages</footer>
+
+<script>
+const i18n = {
+  zh: {
+    'hero-desc': '基于优先经验回放与奖励塑形的改进 Dueling Double DQN 无人艇自主导航算法',
+    'nav-overview': '概述', 'nav-method': '方法', 'nav-results': '实验结果', 'nav-repos': '仓库',
+    'sec-overview': '项目概述',
+    'overview-desc': '本项目提出一种<strong>改进的 Dueling Double DQN (ID3QN)</strong> 算法，用于<strong>C4 智能船舶竞赛</strong>场景下的无人艇 (USV) 自主导航。ID3QN 集成了优先经验回放、复合奖励塑形、软目标更新和学习率调度，在随机障碍物环境中达到 <strong>83% 成功率</strong>。',
+    'card-sim-title': '仿真环境', 'card-sim-desc': '20m x 20m 水域，3-5 个随机障碍物，180 线虚拟激光雷达，184 维状态空间，5 个离散动作',
+    'card-algo-title': '算法对比', 'card-algo-desc': '4 种渐进式变体：DQN -> DDQN -> D3QN -> ID3QN，支持系统性消融对比',
+    'card-train-title': '训练流程', 'card-train-desc': '2000 回合训练，基于 GitHub Actions CI/CD，完全可复现，支持自定义种子',
+    'card-paper-title': '学术论文', 'card-paper-desc': 'IEEE Transactions 格式，5 节内容，8 张图表，14 张表格，20 篇参考文献',
+    'sec-method': 'ID3QN 算法',
+    'method-sub': '相比 D3QN 的关键改进',
+    'm-per-title': '优先经验回放', 'm-per-desc': '基于 SumTree 的 PER，O(log N) 采样复杂度。高 TD 误差的转移被更频繁地回放。IS 权重退火 (beta: 0.4->1.0)。',
+    'm-rs-title': '奖励塑形', 'm-rs-desc': '三分量稠密奖励：距离进度 + 航向对齐 + 安全惩罚。将 C4 稀疏信号转化为连续引导。',
+    'm-su-title': '软更新', 'm-su-desc': 'Polyak 平均 (tau=0.005) 替代硬拷贝。更平滑的目标网络更新降低了价值振荡。',
+    'm-lr-title': '学习率调度', 'm-lr-desc': 'StepLR 衰减：每 500 回合减半。早期快速探索，后期精细调优。Huber 损失 + 梯度裁剪。',
+    'sec-results': '实验结果',
+    'th-algo': '算法', 'th-sr': '成功率', 'th-reward': '平均奖励', 'th-steps': '平均步数', 'th-conv': '收敛回合',
+    'algo-dqn': 'DQN (基线)', 'algo-ddqn': 'Double DQN', 'algo-ours': 'ID3QN (本文)',
+    'fig5': '图5 训练曲线', 'fig7': '图7 轨迹对比',
+    'link-demo': '查看包含全部 8 张图表的交互式演示 &rarr;',
+    'sec-repos': '仓库导航',
+    'repo-site': 'c4nav-site (当前)', 'repo-demo': 'c4nav-demo', 'repo-core': 'c4nav-core', 'repo-data': 'c4nav-data',
+    'repo-site-desc': '项目主页，支持学术与产品双视图，部署于 GitHub Pages。',
+    'repo-demo-desc': '基于 ECharts 的交互式训练结果可视化和论文图表展示。',
+    'repo-core-desc': '核心算法、仿真环境、训练脚本和 GitHub Actions CI 工作流。私有仓库。',
+    'repo-data-desc': '训练日志、模型权重和 300dpi 论文图表。CI 自动更新。',
+    'footer': 'C4Nav &copy; 2026 | 改进 D3QN 无人艇自主导航 | 基于 GitHub Pages 构建'
+  },
+  en: {
+    'hero-desc': 'Improved Dueling Double DQN with Prioritized Experience Replay and Reward Shaping for USV Autonomous Navigation',
+    'nav-overview': 'Overview', 'nav-method': 'Method', 'nav-results': 'Results', 'nav-repos': 'Repos',
+    'sec-overview': 'Project Overview',
+    'overview-desc': 'This project proposes an <strong>Improved Dueling Double DQN (ID3QN)</strong> algorithm for unmanned surface vehicle (USV) autonomous navigation in the <strong>C4 Intelligent Ship Competition</strong> scenario. ID3QN integrates prioritized experience replay, composite reward shaping, soft target updates, and learning rate scheduling, achieving <strong>83% success rate</strong> in a randomized obstacle environment.',
+    'card-sim-title': 'Simulation', 'card-sim-desc': '20m x 20m water area, 3-5 random obstacles, 180-ray LiDAR, 184-dim state space, 5 discrete actions',
+    'card-algo-title': 'Algorithms', 'card-algo-desc': '4 progressive variants: DQN -> DDQN -> D3QN -> ID3QN, enabling systematic comparison',
+    'card-train-title': 'Training', 'card-train-desc': '2000 episodes with GitHub Actions CI/CD, fully reproducible with configurable seeds',
+    'card-paper-title': 'Paper', 'card-paper-desc': 'IEEE Transactions format, 5 sections, 8 figures, 14 tables, 20 references',
+    'sec-method': 'ID3QN Algorithm',
+    'method-sub': 'Key Improvements over D3QN',
+    'm-per-title': 'Prioritized Replay', 'm-per-desc': 'SumTree-based PER with O(log N) sampling. High TD-error transitions replayed more frequently. IS weight annealing (beta: 0.4->1.0).',
+    'm-rs-title': 'Reward Shaping', 'm-rs-desc': '3-component dense reward: distance progress + heading alignment + safety penalty. Transforms sparse C4 signals into continuous guidance.',
+    'm-su-title': 'Soft Update', 'm-su-desc': 'Polyak averaging (tau=0.005) replaces hard copy. Smoother target network transitions reduce value oscillation.',
+    'm-lr-title': 'LR Scheduling', 'm-lr-desc': 'StepLR decay: halve every 500 episodes. Fast exploration early, fine-tuning later. Huber loss + gradient clipping.',
+    'sec-results': 'Experimental Results',
+    'th-algo': 'Algorithm', 'th-sr': 'Success Rate', 'th-reward': 'Avg Reward', 'th-steps': 'Avg Steps', 'th-conv': 'Conv. Episode',
+    'algo-dqn': 'DQN (Baseline)', 'algo-ddqn': 'Double DQN', 'algo-ours': 'ID3QN (Ours)',
+    'fig5': 'Fig.5 Training Curves', 'fig7': 'Fig.7 Trajectory Comparison',
+    'link-demo': 'View interactive demo with all 8 figures &rarr;',
+    'sec-repos': 'Repository Navigation',
+    'repo-site': 'c4nav-site (here)', 'repo-demo': 'c4nav-demo', 'repo-core': 'c4nav-core', 'repo-data': 'c4nav-data',
+    'repo-site-desc': 'Project homepage with academic & product views. Deployed on GitHub Pages.',
+    'repo-demo-desc': 'Interactive ECharts visualizations of training results and paper figures.',
+    'repo-core-desc': 'Core algorithms, environment, training scripts, and GitHub Actions CI workflows. Private repo.',
+    'repo-data-desc': 'Training logs, model weights, and 300dpi paper figures. Auto-updated by CI.',
+    'footer': 'C4Nav &copy; 2026 | Improved D3QN for USV Autonomous Navigation | Built with GitHub Pages'
+  }
+};
+
+function switchLang(lang) {
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[lang][key]) el.innerHTML = i18n[lang][key];
+  });
+  localStorage.setItem('c4nav-lang', lang);
+}
+
+// Init from saved preference or browser language
+(function() {
+  const saved = localStorage.getItem('c4nav-lang');
+  const lang = saved || (navigator.language.startsWith('zh') ? 'zh' : 'en');
+  switchLang(lang);
+})();
+</script>
 </body>
 </html>
