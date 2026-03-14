@@ -15,7 +15,7 @@
     .hero .badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
     .hero .badges img { height: 24px; }
 
-    .lang-switch { position: absolute; top: 1rem; right: 1.5rem; display: flex; gap: 0;
+    .lang-switch { display: flex; gap: 0;
                    border-radius: 20px; overflow: hidden; border: 2px solid rgba(255,255,255,0.5); }
     .lang-switch button { padding: 0.3rem 0.9rem; border: none; cursor: pointer; font-size: 0.85rem;
                           font-weight: 600; transition: all 0.2s; background: transparent; color: rgba(255,255,255,0.7); }
@@ -65,11 +65,45 @@
 
     footer { text-align: center; padding: 2rem; background: #f5f7fa; color: #999; font-size: 0.85rem; border-top: 1px solid #eee; }
 
+    .top-controls { position: absolute; top: 1rem; right: 6rem; display: flex; align-items: center; gap: 0.5rem; z-index: 201; }
+    .theme-toggle { background: transparent; border: 2px solid rgba(255,255,255,0.5); border-radius: 50%;
+                    width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center;
+                    justify-content: center; color: rgba(255,255,255,0.7); transition: all 0.2s; padding: 0; }
+    .theme-toggle:hover { color: #fff; border-color: rgba(255,255,255,0.8); }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: inline; }
+
     .github-corner svg { fill: #004a99; color: #fff; position: absolute; top: 0; right: 0; border: 0; z-index: 200; }
     .github-corner:hover .octo-arm { animation: octocat-wave 560ms ease-in-out; }
     @keyframes octocat-wave { 0%,100% { transform: rotate(0) } 20%,60% { transform: rotate(-25deg) } 40%,80% { transform: rotate(10deg) } }
 
-    @media (max-width: 600px) { .hero h1 { font-size: 1.6rem; } .fig-row { grid-template-columns: 1fr; } .lang-switch { top: 0.5rem; right: 0.5rem; } .github-corner svg { width: 60px; height: 60px; } }
+    /* Dark theme */
+    html[data-theme="dark"] body { background: #0d1117; color: #c9d1d9; }
+    html[data-theme="dark"] .hero { background: linear-gradient(135deg, #0a2540 0%, #0d3868 50%, #0a4a6e 100%); }
+    html[data-theme="dark"] .nav-pills { background: #161b22; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    html[data-theme="dark"] .nav-pills a { color: #58a6ff; }
+    html[data-theme="dark"] .nav-pills a:hover { background: #1c2333; }
+    html[data-theme="dark"] .nav-pills a.active { background: #58a6ff; color: #0d1117; }
+    html[data-theme="dark"] .section h2 { color: #58a6ff; border-bottom-color: #30363d; }
+    html[data-theme="dark"] .card { background: #161b22; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+    html[data-theme="dark"] .card h3 { color: #58a6ff; }
+    html[data-theme="dark"] .card p { color: #8b949e; }
+    html[data-theme="dark"] .highlight-box { background: linear-gradient(135deg, #161b22, #1c2333); border-color: #30363d; }
+    html[data-theme="dark"] .highlight-box p { color: #c9d1d9; }
+    html[data-theme="dark"] .results-table th { background: #1c3a5e; }
+    html[data-theme="dark"] .results-table td { border-bottom-color: #30363d; color: #c9d1d9; }
+    html[data-theme="dark"] .results-table tr:hover { background: #1c2333; }
+    html[data-theme="dark"] .best { color: #f85149; }
+    html[data-theme="dark"] .repo-links a { border-color: #58a6ff; color: #58a6ff; }
+    html[data-theme="dark"] .repo-links a:hover, html[data-theme="dark"] .repo-links .current { background: #58a6ff; color: #0d1117; }
+    html[data-theme="dark"] .fig-row img { box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    html[data-theme="dark"] .fig-caption { color: #6e7681; }
+    html[data-theme="dark"] footer { background: #010409; border-top-color: #30363d; color: #6e7681; }
+    html[data-theme="dark"] .github-corner svg { fill: #c9d1d9; }
+    html[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
+    html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+    @media (max-width: 600px) { .hero h1 { font-size: 1.6rem; } .fig-row { grid-template-columns: 1fr; } .top-controls { top: 0.5rem; right: 4.5rem; } .github-corner svg { width: 60px; height: 60px; } }
   </style>
 </head>
 <body>
@@ -85,9 +119,15 @@
 
 <!-- Hero -->
 <div class="hero">
-  <div class="lang-switch">
-    <button id="btn-zh" class="active" onclick="switchLang('zh')">CN</button>
-    <button id="btn-en" onclick="switchLang('en')">EN</button>
+  <div class="top-controls">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
+      <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <div class="lang-switch">
+      <button id="btn-zh" class="active" onclick="switchLang('zh')">CN</button>
+      <button id="btn-en" onclick="switchLang('en')">EN</button>
+    </div>
   </div>
   <h1>C4Nav</h1>
   <p data-i18n="hero-desc">Improved Dueling Double DQN with Prioritized Experience Replay and Reward Shaping for USV Autonomous Navigation</p>
@@ -304,6 +344,21 @@ function switchLang(lang) {
   });
   localStorage.setItem('c4nav-lang', lang);
 }
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  if (next === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else document.documentElement.removeAttribute('data-theme');
+  localStorage.setItem('c4nav-theme', next);
+}
+
+// Init theme
+(function() {
+  const saved = localStorage.getItem('c4nav-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if ((saved === 'dark') || (!saved && prefersDark)) document.documentElement.setAttribute('data-theme', 'dark');
+})();
 
 // Init from saved preference or browser language
 (function() {
