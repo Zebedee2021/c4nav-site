@@ -88,6 +88,7 @@
 
 <!-- Nav -->
 <div class="nav-pills">
+  <a href="#competition" data-i18n="nav-competition">Competition</a>
   <a href="#overview" class="active" data-i18n="nav-overview">Overview</a>
   <a href="#method" data-i18n="nav-method">Method</a>
   <a href="#results" data-i18n="nav-results">Results</a>
@@ -95,6 +96,40 @@
 </div>
 
 <div class="container">
+
+  <!-- Competition Background -->
+  <div class="section" id="competition">
+    <h2 data-i18n="sec-competition">C4 Competition Background</h2>
+    <div class="highlight-box">
+      <p data-i18n="comp-intro">The <strong>National Marine Vehicle Design and Construction Competition</strong> is the highest-level, largest-scale national competition in China's shipbuilding and ocean engineering domain. Guided by the China Association for Science and Technology and the Ministry of Industry and Information Technology, it promotes industry-academia integration and cultivates high-level engineering talent.</p>
+    </div>
+
+    <h3 data-i18n="comp-track-title">C4 Intelligent Navigation Track</h3>
+    <div class="card-grid">
+      <div class="card" style="border-left-color:#0077cc">
+        <h3 data-i18n="comp-task-title">Task</h3>
+        <p data-i18n="comp-task-desc">Train a USV using deep reinforcement learning to autonomously navigate around obstacles and reach a designated target point in the official Unity simulation platform.</p>
+      </div>
+      <div class="card" style="border-left-color:#0077cc">
+        <h3 data-i18n="comp-platform-title">Official Platform</h3>
+        <p data-i18n="comp-platform-desc">Unity + ML-Agents simulation environment provided by the organizing committee. Our project builds a lightweight Python/Gym equivalent for rapid algorithm prototyping.</p>
+      </div>
+      <div class="card" style="border-left-color:#0077cc">
+        <h3 data-i18n="comp-scoring-title">Scoring</h3>
+        <p data-i18n="comp-scoring-desc">Objective metrics: success rate, completion time, and path length. Subjective review: algorithm novelty, technical report quality, and oral defense.</p>
+      </div>
+      <div class="card" style="border-left-color:#0077cc">
+        <h3 data-i18n="comp-timeline-title">Timeline (2025)</h3>
+        <p data-i18n="comp-timeline-desc">May 16-31: Registration. Jun 1 - Jul 21: Regional competition. Jul 31: Regional review. Aug 8-11: National finals at Jiangsu JUST.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top:1.2rem; background: linear-gradient(135deg, #f0f8ff, #e8f4fd);">
+      <p style="font-size:0.92rem;" data-i18n="comp-relation">
+        <strong data-i18n="comp-relation-strong">How this project relates to C4:</strong> We developed ID3QN as a candidate algorithm for the C4 track. While the official competition uses Unity/ML-Agents, our Python/Gym implementation faithfully replicates the core task (USV obstacle avoidance + goal reaching) for faster iteration. The algorithm design, training pipeline, and analysis methodology are directly applicable to the competition.
+      </p>
+    </div>
+  </div>
 
   <!-- Overview -->
   <div class="section" id="overview">
@@ -172,7 +207,16 @@
 const i18n = {
   zh: {
     'hero-desc': '基于优先经验回放与奖励塑形的改进 Dueling Double DQN 无人艇自主导航算法',
-    'nav-overview': '概述', 'nav-method': '方法', 'nav-results': '实验结果', 'nav-repos': '仓库',
+    'nav-competition': '赛事背景', 'nav-overview': '概述', 'nav-method': '方法', 'nav-results': '实验结果', 'nav-repos': '仓库',
+    'sec-competition': 'C4 赛事背景',
+    'comp-intro': '<strong>全国海洋航行器设计与制作大赛</strong>是我国船舶与海洋工程领域内层次最高、规模最大、覆盖面最广的国家级竞赛。由中国科学技术协会、工业和信息化部指导，中国船舶集团有限公司、中国造船工程学会主办，推动船舶与海洋工程装备产学研一体化发展，培养高层次船海工程技术人才。',
+    'comp-track-title': 'C4 智能导航赛道',
+    'comp-task-title': '比赛任务', 'comp-task-desc': '基于组委会提供的 Unity 虚拟仿真平台，采用深度强化学习算法训练无人艇，使其能够灵活躲避障碍物并到达指定目标点。',
+    'comp-platform-title': '官方平台', 'comp-platform-desc': '组委会提供 Unity + ML-Agents 仿真环境。本项目构建了等效的轻量级 Python/Gym 环境，用于快速算法原型开发与验证。',
+    'comp-scoring-title': '评分标准', 'comp-scoring-desc': '客观指标：成功率、完成用时、路径长度。主观评审：算法新颖性、技术报告质量、现场答辩表现。',
+    'comp-timeline-title': '赛事时间线 (2025)', 'comp-timeline-desc': '5月16-31日：报名。6月1日-7月21日：区域赛。7月31日前：区域赛评审。8月8-11日：国赛（江苏科技大学）。',
+    'comp-relation': '<strong>本项目与 C4 的关系：</strong>我们针对 C4 赛道开发了 ID3QN 候选算法。虽然正式比赛使用 Unity/ML-Agents，但我们的 Python/Gym 实现忠实复现了核心任务（无人艇避障+目标到达），支持更快的算法迭代。算法设计、训练流水线和分析方法可直接应用于比赛。',
+    'comp-relation-strong': '本项目与 C4 的关系：',
     'sec-overview': '项目概述',
     'overview-desc': '本项目提出一种<strong>改进的 Dueling Double DQN (ID3QN)</strong> 算法，用于<strong>C4 智能船舶竞赛</strong>场景下的无人艇 (USV) 自主导航。ID3QN 集成了优先经验回放、复合奖励塑形、软目标更新和学习率调度，在随机障碍物环境中达到 <strong>83% 成功率</strong>。',
     'card-sim-title': '仿真环境', 'card-sim-desc': '20m x 20m 水域，3-5 个随机障碍物，180 线虚拟激光雷达，184 维状态空间，5 个离散动作',
@@ -200,7 +244,16 @@ const i18n = {
   },
   en: {
     'hero-desc': 'Improved Dueling Double DQN with Prioritized Experience Replay and Reward Shaping for USV Autonomous Navigation',
-    'nav-overview': 'Overview', 'nav-method': 'Method', 'nav-results': 'Results', 'nav-repos': 'Repos',
+    'nav-competition': 'Competition', 'nav-overview': 'Overview', 'nav-method': 'Method', 'nav-results': 'Results', 'nav-repos': 'Repos',
+    'sec-competition': 'C4 Competition Background',
+    'comp-intro': 'The <strong>National Marine Vehicle Design and Construction Competition</strong> is the highest-level, largest-scale national competition in China\'s shipbuilding and ocean engineering domain. Guided by the China Association for Science and Technology and the Ministry of Industry and Information Technology, it promotes industry-academia integration and cultivates high-level engineering talent.',
+    'comp-track-title': 'C4 Intelligent Navigation Track',
+    'comp-task-title': 'Task', 'comp-task-desc': 'Train a USV using deep reinforcement learning to autonomously navigate around obstacles and reach a designated target point in the official Unity simulation platform.',
+    'comp-platform-title': 'Official Platform', 'comp-platform-desc': 'Unity + ML-Agents simulation environment provided by the organizing committee. Our project builds a lightweight Python/Gym equivalent for rapid algorithm prototyping.',
+    'comp-scoring-title': 'Scoring', 'comp-scoring-desc': 'Objective metrics: success rate, completion time, and path length. Subjective review: algorithm novelty, technical report quality, and oral defense.',
+    'comp-timeline-title': 'Timeline (2025)', 'comp-timeline-desc': 'May 16-31: Registration. Jun 1 - Jul 21: Regional competition. Jul 31: Regional review. Aug 8-11: National finals at Jiangsu JUST.',
+    'comp-relation': '<strong>How this project relates to C4:</strong> We developed ID3QN as a candidate algorithm for the C4 track. While the official competition uses Unity/ML-Agents, our Python/Gym implementation faithfully replicates the core task (USV obstacle avoidance + goal reaching) for faster iteration. The algorithm design, training pipeline, and analysis methodology are directly applicable to the competition.',
+    'comp-relation-strong': 'How this project relates to C4:',
     'sec-overview': 'Project Overview',
     'overview-desc': 'This project proposes an <strong>Improved Dueling Double DQN (ID3QN)</strong> algorithm for unmanned surface vehicle (USV) autonomous navigation in the <strong>C4 Intelligent Ship Competition</strong> scenario. ID3QN integrates prioritized experience replay, composite reward shaping, soft target updates, and learning rate scheduling, achieving <strong>83% success rate</strong> in a randomized obstacle environment.',
     'card-sim-title': 'Simulation', 'card-sim-desc': '20m x 20m water area, 3-5 random obstacles, 180-ray LiDAR, 184-dim state space, 5 discrete actions',
