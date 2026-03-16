@@ -1,8 +1,8 @@
-# Platform Overview
+# 平台概述
 
 c4nav-core 的定位、架构设计，以及与 C4 官方 SpaceR-USV 平台的关系。
 
-## Core Positioning
+## 核心定位
 
 c4nav-core 是一个**面向 USV 导航的轻量级算法实验台**，而非通用算法库。
 
@@ -10,20 +10,20 @@ c4nav-core 是一个**面向 USV 导航的轻量级算法实验台**，而非通
 - **算法是标准实现** -- DQN 全系列为已有技术的组合，非算法创新
 - **Gymnasium 接口** -- 遵循 `reset()` / `step()` 标准，可接入任意兼容算法
 
-## Why Not Just Use Gymnasium?
+## 为什么不直接用 Gymnasium？
 
 Gymnasium 自带环境（CartPole、LunarLander 等）同样轻量、快速。区别在于**领域特异性**：
 
-| Gym Environment | Gap with USV Navigation |
-|----------------|------------------------|
-| LunarLander | 2D control, no navigation or obstacle avoidance |
-| CarRacing | Track following, not free-space navigation |
-| highway-env | Structured lanes, not open water |
-| MiniGrid | Discrete grid, no continuous dynamics |
+| Gym 环境 | 与 USV 导航的差距 |
+|---------|-----------------|
+| LunarLander | 二维控制，无导航或避障 |
+| CarRacing | 赛道跟随，非自由空间导航 |
+| highway-env | 结构化车道，非开放水域 |
+| MiniGrid | 离散网格，无连续动力学 |
 
 c4nav-core 在 Gym 生态中补了一个空位：**USV 导航避障仿真环境**。
 
-## Applicable Scenarios
+## 适用场景
 
 c4nav-core 的核心抽象（2D LiDAR + 点到点导航 + 惯性动力学）可迁移到：
 

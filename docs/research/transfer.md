@@ -1,57 +1,57 @@
-# Hierarchical Sim Transfer Framework
+# 分层仿真迁移框架
 
-## Core Idea
+## 核心思路
 
-Pre-train in lightweight simulation, transfer to high-fidelity simulation, deploy to real ship.
+在轻量仿真中预训练，迁移到高保真仿真，部署到实船。
 
 ```
-Stage 1: c4nav-core (low-fidelity, fast)
-  | Export model weights
+阶段 1：c4nav-core（低保真，快速）
+  | 导出模型权重
   v
-Stage 2: SpaceR-USV (high-fidelity, Fossen physics)
-  | Same ROS node
+阶段 2：SpaceR-USV（高保真，Fossen 物理）
+  | 相同 ROS 节点
   v
-Stage 3: Real USV130 ship
+阶段 3：真实 USV130 实船
 ```
 
-## Novelty Assessment
+## 新颖性评估
 
-**This approach has NOT been done in the USV domain.** Survey results:
+**该方法在 USV 领域尚属空白。** 调研结果：
 
-| Domain | Representative Work | Approach |
-|--------|-------------------|----------|
-| USV sim-to-real | Batista et al. (IROS 2024) | Single sim -> real (not hierarchical) |
-| Quadrotor | Ryou et al. (MIT, IJRR 2025) | Multi-fidelity Bayesian optimization |
-| Autonomous driving | TU Delft (Duckietown) | CARLA -> Gym -> real car |
-| Multi-robot | Qiu et al. (Tsinghua, IEEE ACCESS 2021) | Low-fi sampling + high-fi fine-tuning |
-| Curriculum transfer | Shukla (Tufts, ICRA 2022) | Low-fi curriculum -> high-fi transfer |
+| 领域 | 代表性工作 | 方法 |
+|------|----------|------|
+| USV sim-to-real | Batista et al. (IROS 2024) | 单一仿真 -> 实船（非分层） |
+| 四旋翼 | Ryou et al. (MIT, IJRR 2025) | 多保真度贝叶斯优化 |
+| 自动驾驶 | TU Delft (Duckietown) | CARLA -> Gym -> 真实小车 |
+| 多机器人 | Qiu et al. (清华, IEEE ACCESS 2021) | 低保真采样 + 高保真微调 |
+| 课程迁移 | Shukla (Tufts, ICRA 2022) | 低保真课程 -> 高保真迁移 |
 
-**USV domain is completely blank** for hierarchical sim transfer.
+**USV 领域完全空白**，无分层仿真迁移的相关工作。
 
-## Three Connection Modes
+## 三种对接模式
 
-| Mode | Description | Purpose |
-|------|-------------|---------|
-| **Direct test** | Load c4nav-core weights -> run in SpaceR-USV (no training) | Quantify transfer gap |
-| **Fine-tuning** | Load weights -> continue training in SpaceR-USV | Accelerate convergence |
-| **Domain randomization** | Randomize physics params during c4nav-core training | Train robust policies |
+| 模式 | 描述 | 用途 |
+|------|------|------|
+| **直接测试** | 加载 c4nav-core 权重 -> 在 SpaceR-USV 中运行（不训练） | 量化迁移差距 |
+| **微调** | 加载权重 -> 在 SpaceR-USV 中继续训练 | 加速收敛 |
+| **域随机化** | 在 c4nav-core 训练时随机化物理参数 | 训练鲁棒策略 |
 
-## Complete Experiment Design
+## 完整实验设计
 
-| Experiment | Method | Measures |
-|-----------|--------|----------|
-| A | SpaceR-USV train from scratch (baseline) | Full training time |
-| B | c4nav-core pretrain -> SpaceR-USV direct test | Transfer loss |
-| C | c4nav-core pretrain -> SpaceR-USV fine-tune | Speedup ratio |
-| D | c4nav-core + domain randomization -> SpaceR-USV direct test | Robustness gain |
+| 实验 | 方法 | 测量 |
+|------|------|------|
+| A | SpaceR-USV 从头训练（基线） | 完整训练时间 |
+| B | c4nav-core 预训练 -> SpaceR-USV 直接测试 | 迁移损失 |
+| C | c4nav-core 预训练 -> SpaceR-USV 微调 | 加速比 |
+| D | c4nav-core + 域随机化 -> SpaceR-USV 直接测试 | 鲁棒性增益 |
 
-## Why It Works
+## 为什么可行
 
-The ROS-based architecture of SpaceR-USV enables seamless connection:
+SpaceR-USV 基于 ROS 的架构使得无缝对接成为可能：
 
 ```
-Training phase:   RL algorithm -- ROS --> Unity simulator (virtual sensors)
-Deployment phase: RL algorithm -- ROS --> Real ship hardware (real sensors)
+训练阶段：  RL 算法 -- ROS --> Unity 仿真器（虚拟传感器）
+部署阶段：  RL 算法 -- ROS --> 实船硬件（真实传感器）
 ```
 
-The RL algorithm node doesn't change between simulation and real ship. Only the ROS data source switches.
+RL 算法节点在仿真与实船之间不需要改变，只是 ROS 数据源切换。

@@ -1,24 +1,24 @@
-# PPO Extension
+# PPO 扩展
 
-## Why Add PPO?
+## 为什么引入 PPO？
 
-Adding PPO creates a complete Value-based vs Policy-based comparison:
+引入 PPO 可构成完整的基于价值 vs 基于策略的算法对比：
 
-- **Value-based**: DQN -> DDQN -> D3QN -> ID3QN (progressive improvement)
-- **Policy-based**: PPO (standard baseline)
+- **基于价值**：DQN -> DDQN -> D3QN -> ID3QN（渐进改进）
+- **基于策略**：PPO（标准基线）
 
-This strengthens paper review resilience when reviewers ask "why only DQN variants?"
+当审稿人质疑"为什么只有 DQN 变体？"时，这可以增强论文的说服力。
 
-## Discrete vs Continuous Action Space Compatibility
+## 离散与连续动作空间兼容性
 
-| Action Space | Compatible Algorithms | Incompatible |
-|-------------|----------------------|-------------|
-| **Discrete** `Discrete(5)` (c4nav-core) | DQN family, PPO, A2C | DDPG, TD3 |
-| **Continuous** `Box(2,)` | PPO, A2C, SAC, TD3, DDPG | DQN family |
+| 动作空间 | 兼容算法 | 不兼容 |
+|---------|---------|--------|
+| **离散** `Discrete(5)` (c4nav-core) | DQN 系列、PPO、A2C | DDPG、TD3 |
+| **连续** `Box(2,)` | PPO、A2C、SAC、TD3、DDPG | DQN 系列 |
 
-c4nav-core uses `Discrete(5)`, so PPO is compatible without changing the action space.
+c4nav-core 使用 `Discrete(5)`，因此 PPO 无需修改动作空间即可直接使用。
 
-## Implementation: Gym Wrapper (~20 lines)
+## 实现：Gym 封装类（约 20 行）
 
 ```python
 import gymnasium as gym
@@ -42,7 +42,7 @@ class USVNavGymWrapper(gym.Env):
         return self.env.step(int(action))
 ```
 
-## Training with SB3
+## 使用 SB3 训练
 
 ```python
 from stable_baselines3 import PPO
@@ -52,11 +52,11 @@ model = PPO("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=500_000)
 ```
 
-## Expected Performance
+## 预期性能
 
-| Algorithm | Total Interaction Steps | Training Time (RTX 4060) |
-|-----------|:----------------------:|:------------------------:|
-| DQN family | ~1M (2000 ep x 500 steps) | ~25 min |
-| PPO | ~0.5-1M | ~15-30 min |
+| 算法 | 总交互步数 | 训练时间（RTX 4060） |
+|------|:--------:|:------------------:|
+| DQN 系列 | ~1M（2000 轮 x 500 步） | ~25 分钟 |
+| PPO | ~0.5-1M | ~15-30 分钟 |
 
-PPO supports vectorized environments (`n_envs=4`), which can further speed up training.
+PPO 支持向量化环境（`n_envs=4`），可进一步加速训练。

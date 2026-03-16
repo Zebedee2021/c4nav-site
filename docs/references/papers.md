@@ -1,32 +1,32 @@
-# Related Papers
+# 相关论文
 
-## USV DRL Navigation
+## USV 深度强化学习导航
 
 - Zhou Zhiguo et al., "T-DQN Intelligent Obstacle Avoidance Algorithm for USV," Acta Automatica Sinica, 2023, 49(8): 1645-1655.
-- Zu Bowen, "Fossen-based 3-DOF USV dynamics model with MWORKS coefficient calculation and Unity high-fidelity training environment" (C4 official platform thesis).
+- 祖伯文，"基于 Fossen 三自由度 USV 动力学模型、MWORKS 系数计算与 Unity 高保真训练环境"（C4 官方平台毕业论文）。
 
-## Physics Models
+## 物理模型
 
 - Fossen, T.I., *Handbook of Marine Craft Hydrodynamics and Motion Control*, Wiley, 2011.
 - Fossen MSS Toolbox: [https://www.fossen.biz/MSS/](https://www.fossen.biz/MSS/)
 - Yasukawa, H. & Yoshimura, Y., "Introduction of MMG Standard Method for Ship Maneuvering Predictions," J. Marine Science and Technology, 2015.
 
-## Physics-Informed RL
+## 物理信息强化学习
 
-- Surveys on PINN + RL intersection (emerging field, limited mature work in value-based RL).
+- PINN + RL 交叉领域综述（新兴方向，基于价值的 RL 中成熟工作有限）。
 
-## Sim-to-Real Transfer
+## 仿真到实船迁移
 
 - Batista et al., "A Deep RL Framework for Reducing the Sim-to-Real Gap in ASV Navigation," IROS 2024.
 - James et al., "Sim-to-Real via Sim-to-Sim: Data-Efficient Robotic Grasping," CVPR 2019.
 - Qiu et al., "Low-Cost Multi-Agent Navigation via RL with Multi-Fidelity Simulator," IEEE ACCESS 2021.
 
-## Embodied AI
+## 具身智能
 
 - Brooks, R., "Intelligence without Representation," Artificial Intelligence, 1991.
 - Clark, A., "Being There: Putting Brain, Body, and World Together Again," MIT Press, 1997.
 
-## C4 Competition
+## C4 竞赛
 
-- SpaceR-USV Official Docs: [https://spaitlab.github.io/Maritime-Intelligent-Navigation-2025/](https://spaitlab.github.io/Maritime-Intelligent-Navigation-2025/)
-- SPAIT Lab GitHub: [https://github.com/spaitlab](https://github.com/spaitlab)
+- SpaceR-USV 官方文档: [https://spaitlab.github.io/Maritime-Intelligent-Navigation-2025/](https://spaitlab.github.io/Maritime-Intelligent-Navigation-2025/)
+- SPAIT 实验室 GitHub: [https://github.com/spaitlab](https://github.com/spaitlab)

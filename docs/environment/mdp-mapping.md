@@ -1,64 +1,64 @@
-# Competition Rules to MDP Mapping
+# 竞赛规则到 MDP 映射
 
-## Scene Rules --> State Space + Scene Generation
+## 场景规则 → 状态空间 + 场景生成
 
-| Competition Rule | Code | Config Value |
-|-----------------|------|-------------|
-| Water area 20m x 20m | `area_size: 20.0` | Walls at +/-10m |
-| 3-5 random obstacles | `num_obstacles_min/max: 3/5` | Randomized each episode |
-| Obstacle spacing >= 2.5m | `min_obstacle_spacing: 2.5` | Prevent unsolvable scenes |
-| Start-to-target dist >= 8m | `min_start_target_dist: 8.0` | Meaningful navigation |
-| Target reach radius 1.5m | `target_radius: 1.5` | Arrival detection |
+| 竞赛规则 | 代码 | 配置值 |
+|---------|------|-------|
+| 水域 20m x 20m | `area_size: 20.0` | 边界在 +/-10m |
+| 3-5 个随机障碍物 | `num_obstacles_min/max: 3/5` | 每回合随机生成 |
+| 障碍物间距 >= 2.5m | `min_obstacle_spacing: 2.5` | 防止无解场景 |
+| 起点到终点距离 >= 8m | `min_start_target_dist: 8.0` | 保证有意义的导航 |
+| 目标到达半径 1.5m | `target_radius: 1.5` | 到达检测 |
 
-## Ship Specification --> Dynamics Model (Transition Function)
+## 船体参数 → 动力学模型（转移函数）
 
-| Competition Rule | Code | Effect |
-|-----------------|------|--------|
-| Max speed 1.8 m/s | `max_speed: 1.8` | Agent cannot exceed |
-| Max turn rate 45 deg/s | `max_turn_rate: 45.0` | Agent cannot turn instantly |
-| Ship has inertia | `speed_damping: 0.95` | Speed response is delayed |
-| Turn delay | `turn_damping: 0.90` | Turn response is delayed |
-| Hull collision radius 0.65m | `collision_radius: 0.65` | Collision detection size |
+| 竞赛规则 | 代码 | 效果 |
+|---------|------|------|
+| 最大航速 1.8 m/s | `max_speed: 1.8` | 智能体不可超速 |
+| 最大转向率 45 deg/s | `max_turn_rate: 45.0` | 智能体不可瞬间转向 |
+| 船体有惯性 | `speed_damping: 0.95` | 速度响应有延迟 |
+| 转向延迟 | `turn_damping: 0.90` | 转向响应有延迟 |
+| 船体碰撞半径 0.65m | `collision_radius: 0.65` | 碰撞检测尺寸 |
 
-## Scoring Rules --> Reward Function
+## 评分规则 → 奖励函数
 
-| Competition Scoring | Reward Design | Code |
-|--------------------|---------------|------|
-| Reach target: score | `+100.0` | `if reached` |
-| Collision: penalty | `-100.0` | `if collided` |
-| Out of bounds: penalty | `-100.0` | `if out_of_bounds` |
-| Less time is better | `-0.1` per step | `step_penalty` |
+| 竞赛评分 | 奖励设计 | 代码 |
+|---------|---------|------|
+| 到达目标：得分 | `+100.0` | `if reached` |
+| 碰撞：扣分 | `-100.0` | `if collided` |
+| 出界：扣分 | `-100.0` | `if out_of_bounds` |
+| 用时越少越好 | 每步 `-0.1` | `step_penalty` |
 
-## Reward Shaping (engineering aid, not competition rules)
+## 奖励塑形（工程辅助，非竞赛规则）
 
-| Shaping Term | Formula | Purpose |
-|-------------|---------|---------|
-| Progress | `(prev_dist - curr_dist) * 2.0` | Guide agent toward target |
-| Safety | `-0.5 * (1 - obs_dist/safety_dist)` | Maintain safe distance |
-| Heading | `+0.3 * cos(heading_to_target)` | Face toward target |
+| 塑形项 | 公式 | 用途 |
+|--------|------|------|
+| 进度奖励 | `(prev_dist - curr_dist) * 2.0` | 引导智能体接近目标 |
+| 安全惩罚 | `-0.5 * (1 - obs_dist/safety_dist)` | 保持安全距离 |
+| 航向对齐 | `+0.3 * cos(heading_to_target)` | 朝向目标方向 |
 
-## Control Method --> Action Space
+## 控制方式 → 动作空间
 
-5 discrete actions defined in `ACTION_MAP`:
+5 个离散动作定义在 `ACTION_MAP` 中：
 
-| Action | Turn | Speed | Usage |
-|--------|------|-------|-------|
-| 0 | Left 45 deg | 70% cruise | Emergency avoidance |
-| 1 | Left 22.5 deg | 100% cruise | Fine adjustment |
-| 2 | Straight | 100% cruise | Normal cruise |
-| 3 | Right 22.5 deg | 100% cruise | Fine adjustment |
-| 4 | Right 45 deg | 70% cruise | Emergency avoidance |
+| 动作 | 转向 | 速度 | 用途 |
+|------|------|------|------|
+| 0 | 左转 45 度 | 巡航速度 70% | 紧急避障 |
+| 1 | 左转 22.5 度 | 巡航速度 100% | 微调 |
+| 2 | 直行 | 巡航速度 100% | 正常巡航 |
+| 3 | 右转 22.5 度 | 巡航速度 100% | 微调 |
+| 4 | 右转 45 度 | 巡航速度 70% | 紧急避障 |
 
-Hard turns automatically reduce speed (speed_factor: 0.7), matching real ship operations.
+急转弯时自动降速（speed_factor: 0.7），符合真实船舶操作规律。
 
-## Observation Space
+## 观测空间
 
-184-dimensional vector:
+184 维向量：
 
-| Index | Content | Normalization |
-|-------|---------|---------------|
-| [0:180] | LiDAR readings | 0=close, 1=clear (by max_range) |
-| [180] | Distance to target | / diagonal |
-| [181] | Angle to target | / pi |
-| [182] | Distance to nearest obstacle | / max_range |
-| [183] | Angle to nearest obstacle | / pi |
+| 索引 | 内容 | 归一化方式 |
+|------|------|----------|
+| [0:180] | LiDAR 读数 | 0=近, 1=远（除以 max_range） |
+| [180] | 到目标的距离 | 除以对角线长度 |
+| [181] | 到目标的角度 | 除以 pi |
+| [182] | 到最近障碍物的距离 | 除以 max_range |
+| [183] | 到最近障碍物的角度 | 除以 pi |

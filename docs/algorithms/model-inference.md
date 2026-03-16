@@ -1,78 +1,78 @@
-# Model Structure, Storage & Inference
+# 模型结构、存储与推理
 
-## What is a "Model"?
+## 什么是"模型"？
 
-The trained "model" is a neural network with ~180K floating-point numbers (weights and biases). After training, these weights encode the navigation strategy learned from hundreds of thousands of trial-and-error interactions.
+训练好的"模型"是一个含有约 180K 浮点数（权重和偏置）的神经网络。训练完成后，这些权重编码了从数十万次试错交互中学到的导航策略。
 
-## Storage Format
+## 存储格式
 
-Models are saved as `.pth` files (PyTorch standard):
+模型保存为 `.pth` 文件（PyTorch 标准格式）：
 
-| File | Size | Contents |
-|------|------|---------|
-| `baseline_seed0/final.pth` | 1.8 MB | QNetwork + optimizer state |
-| `improved_seed0/final.pth` | 2.8 MB | DuelingQNetwork + target network + optimizer + epsilon |
+| 文件 | 大小 | 内容 |
+|------|------|------|
+| `baseline_seed0/final.pth` | 1.8 MB | QNetwork + 优化器状态 |
+| `improved_seed0/final.pth` | 2.8 MB | DuelingQNetwork + 目标网络 + 优化器 + epsilon |
 
-The 2.8 MB includes:
+2.8 MB 包含：
 
-- Q-network weights (~0.7 MB)
-- Target network weights (~0.7 MB, a copy)
-- Optimizer state (~1.2 MB, Adam momentum/variance)
-- Epsilon value (1 float)
+- Q 网络权重（约 0.7 MB）
+- 目标网络权重（约 0.7 MB，一份副本）
+- 优化器状态（约 1.2 MB，Adam 动量/方差）
+- Epsilon 值（1 个浮点数）
 
-For inference only, the Q-network weights (~0.7 MB) are sufficient.
+仅用于推理时，Q 网络权重（约 0.7 MB）即可。
 
-## Loading and Running
+## 加载与运行
 
 ```python
-# Step 1: Create empty network (random weights)
+# 步骤 1：创建空网络（随机权重）
 agent = DQNAgent(state_dim=184, action_dim=5, config=train_cfg)
 
-# Step 2: Load trained weights
+# 步骤 2：加载训练好的权重
 agent.load("outputs/compare/improved_seed0/models/final.pth")
 
-# Step 3: Run inference loop
+# 步骤 3：运行推理循环
 state, info = env.reset()
 for step in range(500):
-    action = agent.select_action(state, training=False)  # inference here
+    action = agent.select_action(state, training=False)  # 推理
     state, reward, terminated, truncated, info = env.step(action)
     if terminated or truncated:
         break
 ```
 
-## What Happens During Inference
+## 推理过程详解
 
-One inference call = one matrix multiplication chain:
+一次推理调用 = 一连串矩阵乘法：
 
 ```
-184 input numbers
-    x weight matrix --> 256 numbers
-    x weight matrix --> 256 numbers
-    --> V branch --> 1 number
-    --> A branch --> 5 numbers
-    Q = V + (A - mean(A)) --> 5 Q-values
-    argmax --> action (0-4)
+184 个输入数值
+    x 权重矩阵 --> 256 个数值
+    x 权重矩阵 --> 256 个数值
+    --> V 分支 --> 1 个数值
+    --> A 分支 --> 5 个数值
+    Q = V + (A - mean(A)) --> 5 个 Q 值
+    argmax --> 动作 (0-4)
 ```
 
-Time: < 1 millisecond.
+耗时：< 1 毫秒。
 
-## Training vs Inference
+## 训练 vs 推理
 
-| | Training | Inference |
+| | 训练 | 推理 |
 |---|---|---|
-| What it does | Trial and error, adjust weights | Use fixed weights for decisions |
-| Computation | Heavy (forward + backward + gradient update) | Light (forward only) |
-| Duration | 25 min for 2000 episodes | < 1 ms per step |
-| GPU needed | Recommended (speeds up training) | Not needed |
-| Replay buffer | Yes (stores hundreds of thousands of experiences) | Not needed |
+| 功能 | 试错，调整权重 | 使用固定权重做决策 |
+| 计算量 | 较重（前向 + 反向 + 梯度更新） | 很轻（仅前向） |
+| 耗时 | 2000 轮约 25 分钟 | 每步 < 1 毫秒 |
+| 是否需要 GPU | 推荐（加速训练） | 不需要 |
+| 经验回放缓冲区 | 需要（存储数十万条经验） | 不需要 |
 
-## Hardware Requirements for Inference
+## 推理硬件要求
 
-| Hardware | Can run inference? | Per-step latency |
-|----------|--------------------|-----------------|
-| RTX 4060 GPU | Yes | < 0.1 ms |
-| Laptop CPU | Yes | < 1 ms |
-| Raspberry Pi 4 | Yes | ~5 ms |
-| Jetson Nano (ship embedded) | Yes | ~2 ms |
+| 硬件 | 能否推理？ | 单步延迟 |
+|------|:---------:|---------|
+| RTX 4060 GPU | 可以 | < 0.1 ms |
+| 笔记本 CPU | 可以 | < 1 ms |
+| Raspberry Pi 4 | 可以 | ~5 ms |
+| Jetson Nano（船载嵌入式） | 可以 | ~2 ms |
 
-The environment simulates 0.1s real time per step. Inference takes < 1ms. Real-time operation is easily achievable on any hardware.
+环境每步模拟 0.1 秒实时时间，推理耗时 < 1ms，在任何硬件上都能轻松实现实时运行。

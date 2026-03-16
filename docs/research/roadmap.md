@@ -1,49 +1,49 @@
-# Four-Phase Research Roadmap
+# 四阶段研究路线图
 
-## Overview
+## 总览
 
-| Phase | Goal | Code Changes | Output |
-|-------|------|:------------:|--------|
-| 1 | Finalize baseline paper | None | Paper: ID3QN_USV_Navigation |
-| 2 | PIRL upgrade + comparison | 3 files modified | Paper: PIRL for USV DRL |
-| 3 | Baseline sim-to-real | ROS wrapper | Paper: Sim-to-real comparison |
-| 4 | PIRL sim-to-real | Combine Phase 2+3 | Paper: Hierarchical transfer |
+| 阶段 | 目标 | 代码改动 | 产出 |
+|------|------|:-------:|------|
+| 1 | 完成基线论文 | 无 | 论文：ID3QN_USV_Navigation |
+| 2 | PIRL 升级 + 对比 | 修改 3 个文件 | 论文：USV DRL 的 PIRL |
+| 3 | 基线 sim-to-real | ROS 封装 | 论文：仿真到实船对比 |
+| 4 | PIRL sim-to-real | 合并第 2+3 阶段 | 论文：分层迁移 |
 
-## Dependency and Parallelism
+## 依赖与并行关系
 
 ```
-Phase 1 (paper refinement) -----------------> Submit
+第一阶段（论文完善）-------------------> 投稿
       |
-      +-- Phase 2 (PIRL code changes) ------> Phase 2 paper
+      +-- 第二阶段（PIRL 代码改动）-------> 第二阶段论文
       |         |
-      |         +-----> Phase 4 (PIRL + real ship)
+      |         +-----> 第四阶段（PIRL + 实船）
       |
-      +-- Phase 3 (baseline + real ship) ----> Phase 3 paper
+      +-- 第三阶段（基线 + 实船）---------> 第三阶段论文
 ```
 
-- **Phase 1 first**: no code changes needed, can start immediately
-- **Phase 2 and 3 in parallel**: Phase 2 modifies code, Phase 3 prepares real ship
-- **Phase 4 depends on Phase 2**: needs PIRL version completed
+- **第一阶段优先**：无需代码改动，可立即开始
+- **第二阶段和第三阶段并行**：第二阶段修改代码，第三阶段准备实船
+- **第四阶段依赖第二阶段**：需要 PIRL 版本完成
 
-## Phase-by-Phase Physics Coverage
+## 逐阶段物理覆盖
 
-| Phase | A: Transition | B: Observation | C: Reward | D: Network |
-|-------|:---:|:---:|:---:|:---:|
-| Phase 1 | 1st-order inertia | 184D geometric | distance+safety+heading | None |
-| Phase 2 | 1st-order (unchanged) | **190D + physics** | **+ energy + jerk** | None |
-| Phase 3 | **Fossen + wind/wave** | Per SpaceR-USV | Per SpaceR-USV | None |
-| Phase 4 | **Fossen + wind/wave** | **+ physics** | **+ energy + jerk** | None |
+| 阶段 | A: 转移 | B: 观测 | C: 奖励 | D: 网络 |
+|------|:-------:|:------:|:------:|:------:|
+| 第一阶段 | 一阶惯性 | 184D 几何量 | 距离+安全+航向 | 无 |
+| 第二阶段 | 一阶惯性（不变） | **190D + 物理量** | **+ 能量 + 急转** | 无 |
+| 第三阶段 | **Fossen + 风/浪/流** | 按 SpaceR-USV | 按 SpaceR-USV | 无 |
+| 第四阶段 | **Fossen + 风/浪/流** | **+ 物理量** | **+ 能量 + 急转** | 无 |
 
-## Developer Summary
+## 开发者摘要
 
-We are conducting systematic research based on the c4nav-core simulation environment, in four phases:
+我们基于 c4nav-core 仿真环境，分四个阶段开展系统研究：
 
-**Phase 1** uses the existing c4nav-core environment and ID3QN algorithm to complete the baseline paper. No code changes involved.
+**第一阶段**使用现有 c4nav-core 环境和 ID3QN 算法完成基线论文，不涉及代码改动。
 
-**Phase 2** introduces Physics-Informed RL into c4nav-core: exposing dynamics model's internal physics quantities (linear/angular acceleration) in the observation vector (184D -> 190D), and adding energy cost and jerk penalty to the reward function. Changes are concentrated in 3 files; the agent network requires zero modification. Comprehensive before/after comparison experiments follow.
+**第二阶段**将物理信息强化学习引入 c4nav-core：在观测向量中暴露动力学模型的内部物理量（线加速度/角加速度），实现 184D -> 190D 扩展，并在奖励函数中添加能量消耗和急转惩罚。改动集中在 3 个文件；智能体网络零修改。随后进行全面的改进前后对比实验。
 
-**Phase 3** deploys current baseline policies and SpaceR-USV (official Unity) policies to the real USV130 ship for sim-to-real transfer comparison. The core difference is physics fidelity: c4nav-core uses simplified 1st-order inertia, SpaceR-USV uses Fossen 3-DOF with wind/wave/current.
+**第三阶段**将当前基线策略和 SpaceR-USV（官方 Unity）策略部署到真实 USV130 实船上，进行 sim-to-real 迁移对比。核心差异在于物理保真度：c4nav-core 使用简化一阶惯性，SpaceR-USV 使用 Fossen 三自由度 + 风/浪/流。
 
-**Phase 4** repeats Phase 3 testing with the PIRL-upgraded version from Phase 2, comparing baseline vs physics-informed transfer quality.
+**第四阶段**使用第二阶段 PIRL 升级版重复第三阶段测试，对比基线 vs 物理信息化的迁移质量。
 
-The significance of this work: c4nav-core, as a lightweight pure-Python simulation, trains an order of magnitude faster than the Unity environment. By progressively introducing physics knowledge and conducting real-ship validation, we address a practical question -- whether physics-informed observation expansion and reward shaping can effectively reduce the sim-to-real gap without significantly increasing simulation complexity.
+本项工作的意义：c4nav-core 作为轻量级纯 Python 仿真，训练速度比 Unity 环境快一个数量级。通过渐进引入物理知识并进行实船验证，我们回答一个实际问题 -- 物理信息化的观测扩展和奖励塑形，能否在不显著增加仿真复杂度的前提下，有效缩小 sim-to-real 差距。

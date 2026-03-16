@@ -1,51 +1,51 @@
-# Dynamics Model
+# 动力学模型
 
-## c4nav-core: 1st-Order Inertia Model
+## c4nav-core：一阶惯性模型
 
 ```python
-# Turn dynamics
+# 转向动力学
 max_angular_accel = max_turn_rate * 3.0  # rad/s^2
 turn_diff = clip(target_turn_rate - turn_rate, -max_angular_accel*dt, +max_angular_accel*dt)
 turn_rate = (turn_rate + turn_diff) * turn_damping  # 0.90
 
-# Speed dynamics
+# 速度动力学
 max_accel = 2.0  # m/s^2
 speed_diff = clip(target_speed - speed, -max_accel*dt, +max_accel*dt)
 speed = (speed + speed_diff) * speed_damping  # 0.95
 
-# Position update
+# 位置更新
 x += speed * cos(heading) * dt
 y += speed * sin(heading) * dt
 ```
 
-Simple, fast, but missing key hydrodynamics.
+简单、快速，但缺少关键水动力学效应。
 
-## SpaceR-USV: Fossen 3-DOF Model
+## SpaceR-USV：Fossen 三自由度模型
 
 $$M\dot{v} + C(v)v + D(v)v + g(\eta) = \tau$$
 
-Where $v = [u, v, r]^T$ (surge, sway, yaw rate).
+其中 $v = [u, v, r]^T$（纵荡、横荡、艏摇角速度）。
 
-## Comparison
+## 对比
 
-| Feature | 1st-Order Inertia | Fossen 3-DOF |
-|---------|-------------------|--------------|
-| DOF | 2 (surge, yaw) | 3 (surge, sway, yaw) |
-| Sway (lateral drift) | No | Yes |
-| Added mass | No | Yes |
-| Coriolis forces | No | Yes |
-| Nonlinear damping | Linear (damping=0.95) | Quadratic D(v) |
-| Propeller model | Simplified target speed | Thrust-RPM curve |
-| Wind/wave/current | No | Yes |
-| Computation | ~0.01 ms/step | ~1 ms/step |
+| 特性 | 一阶惯性 | Fossen 三自由度 |
+|------|---------|----------------|
+| 自由度 | 2（纵荡、艏摇） | 3（纵荡、横荡、艏摇） |
+| 横荡（侧向漂移） | 无 | 有 |
+| 附加质量 | 无 | 有 |
+| 科里奥利力 | 无 | 有 |
+| 非线性阻尼 | 线性（damping=0.95） | 二次型 D(v) |
+| 螺旋桨模型 | 简化目标速度 | 推力-转速曲线 |
+| 风/浪/流扰动 | 无 | 有 |
+| 计算耗时 | ~0.01 ms/步 | ~1 ms/步 |
 
-## Impact on Strategy
+## 对策略的影响
 
-The physics gap matters most during **aggressive maneuvers**:
+物理差距在**激进机动**时影响最大：
 
-- **Straight line**: Both models produce similar behavior
-- **Gentle turns**: Minor differences
-- **Hard turns at speed**: Fossen model shows lateral drift (sway), larger actual turning radius
-- **Emergency stop**: Fossen model has nonlinear deceleration
+- **直线航行**：两种模型行为相似
+- **缓慢转向**：差异较小
+- **高速急转**：Fossen 模型会产生横荡（侧向漂移），实际转弯半径更大
+- **紧急停车**：Fossen 模型有非线性减速
 
-Strategies trained in c4nav-core tend to be **more aggressive** (closer passes, sharper turns) because the simplified model underestimates the consequences of extreme maneuvers.
+在 c4nav-core 中训练出的策略倾向于**更激进**（更近距离通过障碍物、更急的转弯），因为简化模型低估了极端机动的后果。

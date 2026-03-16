@@ -1,63 +1,63 @@
-# SpaceR-USV: C4 Official Platform
+# SpaceR-USV：C4 官方平台
 
 C4 官方仿真平台 SpaceR-USV 由北京理工大学 SPAIT Lab（周治国团队）开发。
 
-## Architecture: Three-in-One
+## 架构：三合一
 
 ```
 +--------------------+     ROS/rosbridge     +--------------------+
-|  Unity 3D Engine   | <------------------> |  ROS Control System |
-|                    |   /sensor_data        |  (Docker container) |
-| - 3D scene render  |   /action_cmd         | - Navigation        |
-| - Sensor simulation|   /reward_signal      | - Decision making   |
-| - Collision detect  |                      | - Algorithm training|
-| - Weather effects   |                      |                     |
+|  Unity 3D 引擎     | <------------------> |  ROS 控制系统       |
+|                    |   /sensor_data        |  (Docker 容器)      |
+| - 3D 场景渲染      |   /action_cmd         | - 导航              |
+| - 传感器仿真       |   /reward_signal      | - 决策              |
+| - 碰撞检测        |                      | - 算法训练           |
+| - 天气效果        |                      |                     |
 +--------------------+                      +--------------------+
          |                                           |
          |              ROS/rosbridge                |
          |                                           |
 +--------+-------------------------------------------+--------+
 |                    Simulink (MATLAB)                        |
-|  - Fossen 3-DOF dynamics model                              |
-|  - Wind / wave / current disturbance                        |
+|  - Fossen 三自由度动力学模型                                  |
+|  - 风/浪/流扰动                                              |
 |  - USV130Demo.slx                                           |
-+------------------------------------------------------------|
++------------------------------------------------------------+
 ```
 
-**Key insight:** Unity is a pure simulator, not a training platform. Training algorithms run externally via ROS. This makes the platform algorithm-agnostic.
+**核心要点：** Unity 是一个纯仿真器，而非训练平台。训练算法通过 ROS 在外部运行，这使得平台与算法解耦。
 
-## USV130 Parameters Alignment
+## USV130 参数对齐
 
-| Parameter | USV130 Real Ship | c4nav-core Config | Match |
-|-----------|:----------------:|:-----------------:|:-----:|
-| Max speed | 1.8 m/s | `max_speed: 1.8` | Exact |
-| Cruise speed | 1.4 m/s | `cruise_speed: 1.4` | Exact |
-| Max turn rate | 45 deg/s | `max_turn_rate: 45.0` | Exact |
-| Hull length | 1.3 m | `collision_radius: 0.65` (half) | Exact |
+| 参数 | USV130 实船 | c4nav-core 配置 | 是否匹配 |
+|------|:---------:|:--------------:|:-------:|
+| 最大航速 | 1.8 m/s | `max_speed: 1.8` | 精确匹配 |
+| 巡航速度 | 1.4 m/s | `cruise_speed: 1.4` | 精确匹配 |
+| 最大转向率 | 45 deg/s | `max_turn_rate: 45.0` | 精确匹配 |
+| 船体长度 | 1.3 m | `collision_radius: 0.65`（半长） | 精确匹配 |
 
-## Physics Model: Fossen (not MMG)
+## 物理模型：Fossen（非 MMG）
 
-The official platform uses **Fossen model** (Norwegian school), not MMG (Japanese school):
+官方平台使用 **Fossen 模型**（挪威学派），而非 MMG（日本学派）：
 
-- Fossen: forces decomposed by **physical property** (inertia M, Coriolis C(v), damping D(v), restoring g(n))
-- MMG: forces decomposed by **source** (hull H, propeller P, rudder R)
-- Both are mathematically equivalent (Newton-Euler 3-DOF rigid body dynamics)
-- Evidence: MATLAB MSS toolbox (fossen.biz/MSS/), confirmed in student thesis (Zu Bowen)
+- Fossen：按**物理属性**分解力（惯性 M、科里奥利力 C(v)、阻尼 D(v)、恢复力 g(n)）
+- MMG：按**力的来源**分解（船体 H、螺旋桨 P、舵 R）
+- 两者在数学上等价（牛顿-欧拉三自由度刚体动力学）
+- 证据：MATLAB MSS 工具箱（fossen.biz/MSS/），学生论文（祖伯文）确认
 
-## Comparison: SpaceR-USV vs c4nav-core
+## 对比：SpaceR-USV vs c4nav-core
 
-| Dimension | SpaceR-USV (Official) | c4nav-core |
-|-----------|----------------------|------------|
-| Nature | Engineering simulation platform | Algorithm research testbed |
-| Physics | Fossen 3-DOF + wind/wave/current | 1st-order inertia (simplified) |
-| Sensors | 5 types (camera/LiDAR/IMU/GPS/depth) | 2D LiDAR only |
-| Modes | Virtual simulation + **Digital Twin** | Virtual simulation only |
-| Deployment | Unity + MATLAB + Docker(ROS), 3 processes | Single Python process |
-| Algorithms | Any (via ROS interface) | DQN family (built-in) |
-| Training speed | Slow (cross-process ROS communication) | Fast (in-process) |
-| Modifiability | Low (Unity/C#/MATLAB required) | High (pure Python, edit YAML) |
-| Ship deployment | Native ROS framework | Needs ROS wrapper |
+| 维度 | SpaceR-USV（官方） | c4nav-core |
+|------|-------------------|------------|
+| 本质 | 工程仿真平台 | 算法研究实验台 |
+| 物理 | Fossen 三自由度 + 风/浪/流 | 一阶惯性（简化） |
+| 传感器 | 5 种（相机/LiDAR/IMU/GPS/深度） | 仅 2D LiDAR |
+| 模式 | 虚拟仿真 + **数字孪生** | 仅虚拟仿真 |
+| 部署 | Unity + MATLAB + Docker(ROS)，3 个进程 | 单个 Python 进程 |
+| 算法 | 任意（通过 ROS 接口） | DQN 系列（内置） |
+| 训练速度 | 慢（跨进程 ROS 通信） | 快（进程内） |
+| 可修改性 | 低（需 Unity/C#/MATLAB） | 高（纯 Python，编辑 YAML） |
+| 实船部署 | 原生 ROS 框架 | 需要 ROS 封装 |
 
-## Historical Significance
+## 历史意义
 
-> C4 platform served as a cognitive ladder in USV autonomous navigation research: from learning RL, to recognizing pure RL's limitations in industrial deployment, to the VLA+DRL hierarchical architecture -- a more viable path for real-world applications.
+> C4 平台在 USV 自主导航研究中充当了认知阶梯：从学习 RL，到认识纯 RL 在工业部署中的局限性，再到 VLA+DRL 分层架构 -- 一条更可行的真实世界应用路径。

@@ -1,6 +1,6 @@
-# References
+# 参考资料
 
-Related papers, documentation, and resources.
+相关论文、文档和资源。
 
-- [Papers](papers.md) -- academic references
-- [Glossary](glossary.md) -- technical terms
+- [相关论文](papers.md) -- 学术参考文献
+- [术语表](glossary.md) -- 技术术语对照

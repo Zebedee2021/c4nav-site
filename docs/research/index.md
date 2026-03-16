@@ -1,28 +1,28 @@
-# Research Directions
+# 研究方向
 
 围绕 c4nav-core 的四个研究方向。
 
-## Overview
+## 总览
 
-| Direction | Core Question | Status |
-|-----------|--------------|--------|
-| [Physics-Informed RL](pirl.md) | Can physics knowledge improve strategies without high-fidelity simulation? | Phase 2 planned |
-| [Transfer Framework](transfer.md) | Can low-fidelity pre-training accelerate high-fidelity convergence? | Novel in USV domain |
-| [4-Phase Roadmap](roadmap.md) | Systematic research plan from baseline paper to real-world validation | In progress |
-| [Embodied Space](embodied-space.md) | Unified modeling framework for intelligent agent behavior | Theoretical framework |
+| 方向 | 核心问题 | 状态 |
+|------|---------|------|
+| [物理信息强化学习](pirl.md) | 物理知识能否在不借助高保真仿真的情况下提升策略？ | 第二阶段规划中 |
+| [仿真迁移框架](transfer.md) | 低保真预训练能否加速高保真收敛？ | USV 领域空白 |
+| [四阶段路线图](roadmap.md) | 从基线论文到实船验证的系统研究计划 | 进行中 |
+| [具身空间理论](embodied-space.md) | 智能体行为的统一建模框架 | 理论框架 |
 
-## Evolution Path
+## 演进路径
 
 ```
-Phase 1: Baseline paper (current c4nav-core, no code changes)
+第一阶段：基线论文（当前 c4nav-core，无代码改动）
     |
-    +-- Phase 2: PIRL upgrade (add physics to observation + reward)
+    +-- 第二阶段：PIRL 升级（向观测和奖励中注入物理信息）
     |       |
-    |       +-- Phase 4: PIRL + real ship testing
+    |       +-- 第四阶段：PIRL + 实船测试
     |
-    +-- Phase 3: Baseline + SpaceR-USV + real ship testing
+    +-- 第三阶段：基线 + SpaceR-USV + 实船测试
             |
-            +-- Future: VLA + DRL hierarchical architecture
+            +-- 未来：VLA + DRL 分层架构
                     |
-                    +-- Embodied Space: unified theoretical foundation
+                    +-- 具身空间：统一理论基础
 ```

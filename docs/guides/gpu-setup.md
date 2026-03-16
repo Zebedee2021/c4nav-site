@@ -1,42 +1,42 @@
-# GPU Setup
+# GPU 配置
 
-## Check GPU Availability
+## 检查 GPU 可用性
 
 ```bash
 nvidia-smi -L
-# Expected: GPU 0: NVIDIA GeForce RTX 4060 (UUID: ...)
+# 预期输出：GPU 0: NVIDIA GeForce RTX 4060 (UUID: ...)
 ```
 
-## Install CUDA PyTorch
+## 安装 CUDA 版 PyTorch
 
-Python 3.12 is recommended (3.14 does not have CUDA wheels yet):
+推荐 Python 3.12（3.14 尚无 CUDA wheels）：
 
 ```bash
-# Create venv with Python 3.12
+# 使用 Python 3.12 创建虚拟环境
 python3.12 -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
+source venv/bin/activate  # Windows 下使用 venv\Scripts\activate
 
-# Install PyTorch with CUDA 12.4
+# 安装 CUDA 12.4 版 PyTorch
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 ```
 
-## Verify
+## 验证
 
 ```python
 import torch
-print(f"CUDA available: {torch.cuda.is_available()}")
-print(f"Device: {torch.cuda.get_device_name(0)}")
-# Expected: CUDA available: True
-# Expected: Device: NVIDIA GeForce RTX 4060
+print(f"CUDA 可用: {torch.cuda.is_available()}")
+print(f"设备: {torch.cuda.get_device_name(0)}")
+# 预期输出：CUDA 可用: True
+# 预期输出：设备: NVIDIA GeForce RTX 4060
 ```
 
-## Training Impact
+## 训练加速效果
 
-c4nav-core's model (~180K parameters) is small. GPU acceleration primarily helps with batch operations in the replay buffer:
+c4nav-core 的模型较小（约 180K 参数），GPU 加速主要体现在经验回放缓冲区的批量运算上：
 
-| Hardware | 2000 Episodes Training Time |
-|----------|:--------------------------:|
-| CPU only (i7) | ~40 min |
-| RTX 4060 GPU | ~25 min |
+| 硬件 | 2000 轮训练耗时 |
+|------|:--------------:|
+| 仅 CPU (i7) | ~40 分钟 |
+| RTX 4060 GPU | ~25 分钟 |
 
-For this model size, the speedup is moderate (~1.6x). The benefit grows with larger networks or batch sizes.
+该模型规模下加速幅度适中（约 1.6 倍）。使用更大的网络或更大的批量时，加速效果更明显。

@@ -1,8 +1,8 @@
-# YAML Configuration Reference
+# YAML 参数配置参考
 
-All training parameters are controlled via YAML config files in `config/`.
+所有训练参数通过 `config/` 目录下的 YAML 配置文件控制。
 
-## Example: `improved_d3qn.yaml`
+## 示例：`improved_d3qn.yaml`
 
 ```yaml
 scene:
@@ -63,19 +63,19 @@ training:
   lr_gamma: 0.5
 ```
 
-## Parameter Groups
+## 参数分组
 
-### Scene Parameters
-Control the water area and obstacle generation. Aligned with C4 competition specifications.
+### 场景参数
+控制水域面积和障碍物生成，与 C4 竞赛规格对齐。
 
-### USV Parameters
-Ship dynamics parameters. Values match the real USV130 ship.
+### USV 参数
+船体动力学参数，数值与真实 USV130 实船匹配。
 
-### LiDAR Parameters
-Virtual sensor configuration. 180 rays covering 360 degrees with 18m range.
+### LiDAR 参数
+虚拟传感器配置：180 条射线覆盖 360 度，最大量程 18m。
 
-### Reward Parameters
-Terminal rewards match competition scoring. Shaping components are optional aids for training.
+### 奖励参数
+终端奖励与竞赛评分规则对齐，奖励塑形分量为可选的训练辅助项。
 
-### Training Parameters
-Algorithm hyperparameters. The algorithm variant is determined by the combination of switches (`use_double_dqn`, `network_type`, `use_per`, etc.).
+### 训练参数
+算法超参数。算法变体由开关组合决定（`use_double_dqn`、`network_type`、`use_per` 等）。

@@ -1,105 +1,105 @@
-# Embodied Space Theory
+# 具身空间理论
 
-## Background
+## 背景
 
-Traditional information systems (CPS architecture) model physical space and cyber space, but lack explicit modeling of:
+传统信息系统（CPS 架构）对物理空间和信息空间进行建模，但缺乏对以下方面的显式建模：
 
-1. Task-environment coupling
-2. Behavioral constraints and strategy space
-3. Unified learning space for intelligent agents
+1. 任务-环境耦合
+2. 行为约束与策略空间
+3. 智能体的统一学习空间
 
-Embodied AI research (Brooks, Clark) argues that intelligence exists in the **body + environment + action loop**, but lacks engineering modeling methods.
+具身智能研究（Brooks, Clark）认为智能存在于**身体 + 环境 + 动作循环**中，但缺乏工程建模方法。
 
-## Formal Definition
+## 形式化定义
 
 $$\mathcal{E} = (S, A, T, C, P)$$
 
-| Symbol | Meaning |
-|--------|---------|
-| S | State Space |
-| A | Action Space |
-| T | Task Space |
-| C | Constraint Space |
-| P | Physical Environment Field |
+| 符号 | 含义 |
+|------|------|
+| S | 状态空间 |
+| A | 动作空间 |
+| T | 任务空间 |
+| C | 约束空间 |
+| P | 物理环境场 |
 
-**Embodied Space = Environment + State + Action + Task + Constraint**
+**具身空间 = 环境 + 状态 + 动作 + 任务 + 约束**
 
-## GEM Structure Model
+## GEM 结构模型
 
 ```
-G -- Geometry Space (maps, 3D scenes, structures)
-E -- Environment Field (wind, water, electromagnetic, temperature)
-M -- Mission Space (tasks, behavioral rules, operational norms)
+G -- 几何空间（地图、3D 场景、结构）
+E -- 环境场（风、水、电磁、温度）
+M -- 任务空间（任务、行为规则、操作规范）
 ```
 
-## C4 Platform GEM Mapping
+## C4 平台 GEM 映射
 
-| GEM Element | SpaceR-USV Status | Completeness |
-|-------------|------------------|:------------:|
-| **G** (Geometry) | Unity 3D scenes, obstacles, water boundaries, ship model | Complete |
-| **E** (Environment) | Simulink wind/wave/current, hydrodynamics | Complete |
-| **M** (Mission) | **Missing** -- only hardcoded "navigate to target" | Insufficient |
+| GEM 要素 | SpaceR-USV 现状 | 完备性 |
+|---------|----------------|:------:|
+| **G**（几何） | Unity 3D 场景、障碍物、水域边界、船体模型 | 完备 |
+| **E**（环境） | Simulink 风/浪/流、水动力学 | 完备 |
+| **M**（任务） | **缺失** -- 仅硬编码"导航到目标点" | 不足 |
 
-**C4 has G and E, but lacks M.**
+**C4 有 G 和 E，但缺少 M。**
 
-## Upgrade Path: C4 -> Embodied Space Platform
+## 升级路径：C4 -> 具身空间平台
 
-### Current C4
+### 当前 C4
 
-Single task: `navigate(A -> B)` with obstacle avoidance.
+单一任务：`navigate(A -> B)` + 障碍物规避。
 
-### Upgraded C4 with Mission Space
+### 升级后的 C4（带任务空间）
 
-**T (Task Graph):**
+**T（任务图）：**
 ```
-         +-- patrol (area cruise)
+         +-- patrol（区域巡逻）
          |
-start ---+-- search (target search)
+start ---+-- search（目标搜索）
          |
-         +-- avoid (dynamic obstacles) <-- trigger: obstacle detected
+         +-- avoid（动态避障）   <-- 触发：检测到障碍物
          |
-         +-- track (target tracking)   <-- trigger: target found
+         +-- track（目标跟踪）   <-- 触发：发现目标
          |
-         +-- return (return to base)   <-- trigger: low battery / mission complete
+         +-- return（返回基地）  <-- 触发：电量低 / 任务完成
 ```
 
-**C (Constraint Set):**
+**C（约束集）：**
 
-| Constraint Type | Content | Current C4 | Upgraded |
-|----------------|---------|:----------:|:--------:|
-| Safety | Min distance to obstacles >= 2m | Collision only | Explicit safety modeling |
-| Navigation rules | COLREGS (give way to starboard) | None | Rule engine |
-| Energy | Battery level affects strategy | None | Energy model |
-| Communication | Autonomous decisions beyond comm range | None | Comm range model |
+| 约束类型 | 内容 | 当前 C4 | 升级后 |
+|---------|------|:------:|:-----:|
+| 安全 | 与障碍物最小距离 >= 2m | 仅碰撞检测 | 显式安全建模 |
+| 航行规则 | COLREGS（右舷让路） | 无 | 规则引擎 |
+| 能量 | 电池电量影响策略 | 无 | 能量模型 |
+| 通信 | 超出通信范围时自主决策 | 无 | 通信范围模型 |
 
-## Relationship to VLA + DRL
+## 与 VLA + DRL 的关系
 
-Embodied Space theory provides the formal foundation for the VLA + DRL hierarchical architecture:
+具身空间理论为 VLA + DRL 分层架构提供了形式化基础：
 
 ```
-VLA layer -- operates in T (Task) and C (Constraint) spaces
-  "Currently on patrol, vessel ahead, COLREGS requires starboard turn,
-   battery at 40%, return to base after completion"
+VLA 层 -- 在 T（任务）和 C（约束）空间中运作
+  "当前正在巡逻，前方有船只，COLREGS 要求右转让路，
+   电量 40%，完成后返回基地"
               |
               v
-DRL layer -- operates in G (Geometry) and E (Environment) spaces
-  "Turn right 22.5 deg, speed 1.2 m/s"
+DRL 层 -- 在 G（几何）和 E（环境）空间中运作
+  "右转 22.5 度，航速 1.2 m/s"
 ```
 
-## Evolution Path
+## 演进路径
 
 ```
-Control Systems -> CPS -> AI-CPS -> Embodied Space
+控制系统 -> CPS -> AI-CPS -> 具身空间
 ```
 
-The Embodied Space framework elevates C4 from an "RL training environment for competitions" to "a general-purpose platform for validating embodied intelligence theory."
+具身空间框架将 C4 从"面向竞赛的 RL 训练环境"提升为"验证具身智能理论的通用平台"。
 
-## From RL Training Platform to Embodied Intelligence Platform
+## 从 RL 训练平台到具身智能平台
 
-| Dimension | Current C4 | Embodied Space C4 |
-|-----------|-----------|-------------------|
-| What it trains | Single-point navigation | Multi-task autonomous decision-making |
-| Agent type | Pure RL (cerebellum) | VLA + RL (brain + cerebellum) |
-| Environment expression | G + E | G + E + M |
-| Academic positioning | RL training platform | Embodied intelligence research platform |
-| Industrial value | Competition tool | General USV simulation framework |
+| 维度 | 当前 C4 | 具身空间 C4 |
+|------|--------|------------|
+| 训练内容 | 单点导航 | 多任务自主决策 |
+| 智能体类型 | 纯 RL（小脑） | VLA + RL（大脑 + 小脑） |
+| 环境表达 | G + E | G + E + M |
+| 学术定位 | RL 训练平台 | 具身智能研究平台 |
+| 产业价值 | 竞赛工具 | 通用 USV 仿真框架 |

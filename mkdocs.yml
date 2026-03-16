@@ -1,6 +1,6 @@
-site_name: C4Nav - USV Autonomous Navigation
+site_name: C4Nav - 无人艇自主导航
 site_url: https://zebedee2021.github.io/c4nav-site/
-site_description: C4 USV Autonomous Navigation Research Platform - Documentation
+site_description: C4 无人艇自主导航研究平台 - 技术文档
 repo_url: https://github.com/Zebedee2021/c4nav-site
 repo_name: Zebedee2021/c4nav-site
 
@@ -13,13 +13,13 @@ theme:
       accent: blue
       toggle:
         icon: material/brightness-7
-        name: Switch to dark mode
+        name: 切换为深色模式
     - scheme: slate
       primary: indigo
       accent: blue
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: 切换为浅色模式
   features:
     - navigation.sections
     - navigation.expand
@@ -33,36 +33,36 @@ theme:
     repo: fontawesome/brands/github
 
 nav:
-  - Home: index.md
-  - Platform:
+  - 首页: index.md
+  - 平台:
     - platform/index.md
-    - Architecture: platform/architecture.md
+    - 架构设计: platform/architecture.md
     - SpaceR-USV: platform/spacer-usv.md
-  - Environment:
+  - 仿真环境:
     - environment/index.md
-    - Rules to MDP: environment/mdp-mapping.md
-    - Dynamics: environment/dynamics.md
-    - Reward: environment/reward.md
-  - Algorithms:
+    - 竞赛规则到 MDP 映射: environment/mdp-mapping.md
+    - 动力学模型: environment/dynamics.md
+    - 奖励函数: environment/reward.md
+  - 算法:
     - algorithms/index.md
-    - DQN Family: algorithms/dqn-family.md
-    - PPO Extension: algorithms/ppo-extension.md
-    - Model & Inference: algorithms/model-inference.md
-  - Research:
+    - DQN 系列: algorithms/dqn-family.md
+    - PPO 扩展: algorithms/ppo-extension.md
+    - 模型与推理: algorithms/model-inference.md
+  - 研究方向:
     - research/index.md
-    - Physics-Informed RL: research/pirl.md
-    - Transfer Framework: research/transfer.md
-    - Roadmap: research/roadmap.md
-    - Embodied Space: research/embodied-space.md
-  - Guides:
+    - 物理信息强化学习: research/pirl.md
+    - 仿真迁移框架: research/transfer.md
+    - 研究路线图: research/roadmap.md
+    - 具身空间理论: research/embodied-space.md
+  - 使用指南:
     - guides/index.md
-    - Quick Start: guides/quickstart.md
-    - GPU Setup: guides/gpu-setup.md
-    - Configuration: guides/config.md
-  - References:
+    - 快速开始: guides/quickstart.md
+    - GPU 配置: guides/gpu-setup.md
+    - 参数配置: guides/config.md
+  - 参考资料:
     - references/index.md
-    - Papers: references/papers.md
-    - Glossary: references/glossary.md
+    - 相关论文: references/papers.md
+    - 术语表: references/glossary.md
 
 plugins:
   - search

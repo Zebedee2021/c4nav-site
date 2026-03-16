@@ -1,87 +1,87 @@
-# Physics-Informed Reinforcement Learning (PIRL)
+# 物理信息强化学习 (PIRL)
 
-## Four Injection Points
+## 四个注入位置
 
-Physics information can be injected into 4 positions in the RL framework:
+物理信息可以注入 RL 框架的 4 个位置：
 
 ```
               +--------------------------+
-              |     RL Training Loop     |
+              |     RL 训练循环           |
               |                          |
-  +--------+  |  +---------+  obs S     |
-  | Env    |--+--| Agent   |<--------   |
-  |        |  |  | (network)|-------->  |
-  | Trans  |<-+--| D:loss  |  action A  |
-  | C:reward|  |  +---------+           |
+  +--------+  |  +---------+  观测 S     |
+  | 环境   |--+--| 智能体  |<--------   |
+  |        |  |  | (网络)  |-------->   |
+  | 转移   |<-+--| D:损失  |  动作 A    |
+  | C:奖励 |  |  +---------+           |
   +--------+  |                          |
               +--------------------------+
 
-A: State transition (dynamics fidelity)
-B: Observation (what agent can see)
-C: Reward (what behavior is encouraged)
-D: Network/Loss (physics equations as constraints)
+A：状态转移（动力学保真度）
+B：观测（智能体能看到什么）
+C：奖励（鼓励什么行为）
+D：网络/损失（物理方程作为约束）
 ```
 
-| Position | Method | Example |
-|----------|--------|---------|
-| **A** | More accurate physics model | Simulink Fossen model |
-| **B** | Expose physics quantities in observation | Add accel, angular_accel |
-| **C** | Physics-aware reward terms | Energy cost, jerk penalty |
-| **D** | Physics equations in loss function | PINN-style PDE residual |
+| 位置 | 方法 | 示例 |
+|------|------|------|
+| **A** | 更精确的物理模型 | Simulink Fossen 模型 |
+| **B** | 在观测中暴露物理量 | 添加加速度、角加速度 |
+| **C** | 物理感知的奖励项 | 能量消耗、急转惩罚 |
+| **D** | 在损失函数中加入物理方程 | PINN 式 PDE 残差 |
 
-## Phase 2 Plan: B + C
+## 第二阶段方案：B + C
 
-Phase 2 implements positions B and C (lowest risk, smallest code change):
+第二阶段实现位置 B 和 C（风险最低、代码改动最小）：
 
-### B: Observation Expansion
+### B：观测空间扩展
 
-| Config | Dimensions | Content |
-|--------|:----------:|---------|
-| Baseline (current) | 184 | 180 LiDAR + 4 nav |
-| + velocity | 186 | + speed_norm + turn_rate_norm |
-| + acceleration | 188 | + accel_norm + angular_accel_norm |
-| Full physics | 190 | All of the above |
+| 配置 | 维度 | 内容 |
+|------|:----:|------|
+| 基线（当前） | 184 | 180 LiDAR + 4 导航量 |
+| + 速度信息 | 186 | + 归一化速度 + 归一化转向率 |
+| + 加速度信息 | 188 | + 归一化加速度 + 归一化角加速度 |
+| 完整物理 | 190 | 以上全部 |
 
-Code changes: `usv_dynamics.py` (expose accel in `get_state()`), `usv_env.py` (parameterize `_get_observation()`).
+代码改动：`usv_dynamics.py`（在 `get_state()` 中暴露加速度）、`usv_env.py`（参数化 `_get_observation()`）。
 
-**Agent code: zero changes** (state_dim is already parameterized).
+**智能体代码：零改动**（state_dim 已参数化）。
 
-### C: Physics-Aware Reward
+### C：物理感知奖励
 
-| Reward Term | Formula | Purpose |
-|-------------|---------|---------|
-| Energy cost | `-energy_scale * abs(accel)` | Penalize frequent speed changes |
-| Jerk penalty | `-jerk_scale * abs(angular_accel)` | Penalize sharp turns |
+| 奖励项 | 公式 | 用途 |
+|--------|------|------|
+| 能量消耗 | `-energy_scale * abs(accel)` | 惩罚频繁变速 |
+| 急转惩罚 | `-jerk_scale * abs(angular_accel)` | 惩罚急转弯 |
 
-Code changes: `reward.py` (add 2 terms), config YAML (add enable flags and scale params).
+代码改动：`reward.py`（添加 2 项）、配置 YAML（添加开关和缩放参数）。
 
-### Why Not D (PINN-style)?
+### 为什么不用 D（PINN 式）？
 
-DQN's training target is TD error minimization. Q-values are not physical quantities -- there is no PDE to constrain them. PINN-style physics loss has no mature paradigm in value-based RL. Position D could be explored as **auxiliary prediction heads** (multi-task learning), but this is a separate research contribution.
+DQN 的训练目标是最小化 TD 误差。Q 值不是物理量 -- 没有可以约束它们的 PDE。PINN 式物理损失在基于价值的 RL 中尚无成熟范式。位置 D 可以作为**辅助预测头**（多任务学习）来探索，但这是另一个独立的研究贡献。
 
-## Experiment Matrix
+## 实验矩阵
 
-| ID | Algorithm | Observation | Physics Reward | Config |
-|----|-----------|:-----------:|:--------------:|--------|
-| A1 | ID3QN | 184D (baseline) | No | `improved_d3qn.yaml` |
-| A2 | ID3QN | 190D (physics) | No | `pirl_obs_only.yaml` |
-| A3 | ID3QN | 184D (baseline) | Yes | `pirl_reward_only.yaml` |
-| A4 | ID3QN | 190D (physics) | Yes | `improved_d3qn_pirl.yaml` |
+| 编号 | 算法 | 观测 | 物理奖励 | 配置 |
+|------|------|:----:|:-------:|------|
+| A1 | ID3QN | 184D（基线） | 否 | `improved_d3qn.yaml` |
+| A2 | ID3QN | 190D（物理） | 否 | `pirl_obs_only.yaml` |
+| A3 | ID3QN | 184D（基线） | 是 | `pirl_reward_only.yaml` |
+| A4 | ID3QN | 190D（物理） | 是 | `improved_d3qn_pirl.yaml` |
 
-Metrics: success rate, avg reward, convergence episode, trajectory smoothness (curvature variance), energy consumption (cumulative acceleration).
+评估指标：成功率、平均奖励、收敛轮次、轨迹平滑度（曲率方差）、能量消耗（累计加速度）。
 
-## Two Complementary Paths
+## 两条互补路径
 
 ```
-Path 1 (Phase 3): Improve environment fidelity
-  Make A better -> Simulink Fossen model
-  Agent learns physics implicitly through experience
-  Cost: heavy, slow, expensive
+路径 1（第三阶段）：提升环境保真度
+  改进 A -> Simulink Fossen 模型
+  智能体通过经验隐式学习物理
+  代价：重、慢、贵
 
-Path 2 (Phase 2): Improve agent's physics awareness
-  Make B and C better -> PIRL in lightweight env
-  Agent learns physics explicitly through observation and reward
-  Cost: light, fast, but physics may be inaccurate
+路径 2（第二阶段）：提升智能体的物理感知
+  改进 B 和 C -> 在轻量环境中做 PIRL
+  智能体通过观测和奖励显式学习物理
+  代价：轻、快，但物理可能不够精确
 ```
 
-**Phase 4 is the intersection**: A + B + C all contain physics. The key experiment is whether B+C provides additional value when A is already high-fidelity.
+**第四阶段是交汇点**：A + B + C 全部包含物理信息。关键实验是：当 A 已经是高保真时，B+C 是否还能提供额外价值。

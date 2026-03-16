@@ -1,12 +1,12 @@
-# Quick Start
+# 快速开始
 
-## Prerequisites
+## 前提条件
 
-- Python 3.10+ (3.12 recommended)
+- Python 3.10+（推荐 3.12）
 - pip
-- (Optional) NVIDIA GPU with CUDA for accelerated training
+- （可选）NVIDIA 显卡 + CUDA，用于加速训练
 
-## Step 1: Clone and Setup
+## 步骤一：克隆与配置
 
 ```bash
 git clone https://github.com/Zebedee2021/c4nav-core.git
@@ -19,20 +19,20 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Step 2: Train
+## 步骤二：训练
 
 ```bash
-# Train all 4 algorithms (2000 episodes each, ~90 min total)
+# 训练全部 4 种算法（每种 2000 轮，总计约 90 分钟）
 python scripts/train_compare.py --algorithms all --seed 0
 
-# Train single algorithm (faster)
+# 单独训练某一种算法（更快）
 python scripts/train_compare.py --algorithms improved --seed 0 --episodes 500
 ```
 
-## Step 3: Test
+## 步骤三：测试
 
 ```bash
 python scripts/test.py --config config/improved_d3qn.yaml --model outputs/compare/improved_seed0/models/best.pth
 ```
 
-Output includes success rate, average reward, trajectory visualizations, and animation of the best episode.
+输出包括：成功率、平均奖励、轨迹可视化，以及最佳回合的动画。
