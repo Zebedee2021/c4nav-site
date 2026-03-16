@@ -1,0 +1,98 @@
+site_name: C4Nav - USV Autonomous Navigation
+site_url: https://zebedee2021.github.io/c4nav-site/
+site_description: C4 USV Autonomous Navigation Research Platform - Documentation
+repo_url: https://github.com/Zebedee2021/c4nav-site
+repo_name: Zebedee2021/c4nav-site
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Platform:
+    - platform/index.md
+    - Architecture: platform/architecture.md
+    - SpaceR-USV: platform/spacer-usv.md
+  - Environment:
+    - environment/index.md
+    - Rules to MDP: environment/mdp-mapping.md
+    - Dynamics: environment/dynamics.md
+    - Reward: environment/reward.md
+  - Algorithms:
+    - algorithms/index.md
+    - DQN Family: algorithms/dqn-family.md
+    - PPO Extension: algorithms/ppo-extension.md
+    - Model & Inference: algorithms/model-inference.md
+  - Research:
+    - research/index.md
+    - Physics-Informed RL: research/pirl.md
+    - Transfer Framework: research/transfer.md
+    - Roadmap: research/roadmap.md
+    - Embodied Space: research/embodied-space.md
+  - Guides:
+    - guides/index.md
+    - Quick Start: guides/quickstart.md
+    - GPU Setup: guides/gpu-setup.md
+    - Configuration: guides/config.md
+  - References:
+    - references/index.md
+    - Papers: references/papers.md
+    - Glossary: references/glossary.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+  - attr_list
+  - md_in_html
+  - def_list
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Zebedee2021
