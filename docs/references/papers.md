@@ -1,9 +1,9 @@
 # 相关论文
 
-## USV 深度强化学习导航
+## 周治国团队（SPAIT Lab）
 
-- Zhou Zhiguo et al., "T-DQN Intelligent Obstacle Avoidance Algorithm for USV," Acta Automatica Sinica, 2023, 49(8): 1645-1655.
-- 祖伯文，"基于 Fossen 三自由度 USV 动力学模型、MWORKS 系数计算与 Unity 高保真训练环境"（C4 官方平台毕业论文）。
+- ResearchGate: [Zhiguo Zhou](https://www.researchgate.net/profile/Zhiguo-Zhou-2/research)
+- Google Scholar: [Zhiguo Zhou](https://scholar.google.com/citations?hl=en&user=vMLtpZYAAAAJ&view_op=list_works&sortby=pubdate)
 
 ## 物理模型
 
