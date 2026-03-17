@@ -1,0 +1,3154 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="C4 无人艇自主导航研究平台 - 技术文档">
+      
+      
+      
+        <link rel="canonical" href="https://zebedee2021.github.io/c4nav-site/algorithms/dqn-family/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../ppo-extension/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>DQN 系列 - C4Nav - 无人艇自主导航</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dqn-dqn-id3qn" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="C4Nav - 无人艇自主导航" class="md-header__button md-logo" aria-label="C4Nav - 无人艇自主导航" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            C4Nav - 无人艇自主导航
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DQN 系列
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="切换为深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换为深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="切换为浅色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换为浅色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Zebedee2021/c4nav-site" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Zebedee2021/c4nav-site
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="C4Nav - 无人艇自主导航" class="md-nav__button md-logo" aria-label="C4Nav - 无人艇自主导航" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    C4Nav - 无人艇自主导航
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Zebedee2021/c4nav-site" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Zebedee2021/c4nav-site
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../platform/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    平台
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    平台
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platform/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构设计
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platform/spacer-usv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SpaceR-USV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../environment/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    仿真环境
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    仿真环境
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../environment/mdp-mapping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    竞赛规则到 MDP 映射
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../environment/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    动力学模型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../environment/reward/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    奖励函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    算法
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    算法
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DQN 系列
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DQN 系列
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        算法来源
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        递进路线图
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-1-dqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 1: DQN 基线
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 1: DQN 基线">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        核心思想
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        两个关键机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        训练循环
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DQN 的问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-2-double-dqn-ddqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 2: Double DQN (DDQN)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 2: Double DQN (DDQN)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码变化：仅 4 行
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-diff-dqn-ddqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Diff: DQN -&gt; DDQN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-3-dueling-d3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 3: Dueling D3QN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 3: Dueling D3QN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网络代码
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参数量对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-diff-ddqn-d3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Diff: DDQN -&gt; D3QN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-4-id3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 4: ID3QN (本文算法)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 4: ID3QN (本文算法)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-reward-shaping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 1：奖励塑形 (Reward Shaping)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-per" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 2：优先经验回放 (PER)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 3：软目标网络更新
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 4：学习率调度
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-diff-d3qn-id3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Diff: D3QN -&gt; ID3QN (全部变化)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ddqnd3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么 DDQN/D3QN 反而更差
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完整对照表
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="完整对照表">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特性矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完整性能
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        结果解读
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        消融实验：哪项改进最重要
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        算法开关
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码文件速查
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ppo-extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PPO 扩展
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-inference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型与推理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研究方向
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    研究方向
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/pirl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    物理信息强化学习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/transfer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    仿真迁移框架
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研究路线图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/embodied-space/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    具身空间理论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guides/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    使用指南
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    使用指南
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速开始
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/gpu-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU 配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参数配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/training-methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    训练方式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/understanding-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    训练结果解读
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/paper-writing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文写作指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../references/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参考资料
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    参考资料
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/papers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相关论文
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        算法来源
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        递进路线图
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-1-dqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 1: DQN 基线
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 1: DQN 基线">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        核心思想
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        两个关键机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        训练循环
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DQN 的问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-2-double-dqn-ddqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 2: Double DQN (DDQN)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 2: Double DQN (DDQN)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码变化：仅 4 行
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-diff-dqn-ddqn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Diff: DQN -&gt; DDQN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-3-dueling-d3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 3: Dueling D3QN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 3: Dueling D3QN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网络代码
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参数量对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-diff-ddqn-d3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Diff: DDQN -&gt; D3QN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#level-4-id3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 4: ID3QN (本文算法)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Level 4: ID3QN (本文算法)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-reward-shaping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 1：奖励塑形 (Reward Shaping)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-per" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 2：优先经验回放 (PER)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 3：软目标网络更新
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        改进 4：学习率调度
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-diff-d3qn-id3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Diff: D3QN -&gt; ID3QN (全部变化)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ddqnd3qn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么 DDQN/D3QN 反而更差
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完整对照表
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="完整对照表">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特性矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完整性能
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        结果解读
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        消融实验：哪项改进最重要
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        算法开关
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代码文件速查
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="dqn-dqn-id3qn">DQN 系列：从 DQN 到 ID3QN<a class="headerlink" href="#dqn-dqn-id3qn" title="Permanent link">&para;</a></h1>
+<p><strong>逐层递进讲解 + 代码对照</strong></p>
+<div class="admonition info">
+<p class="admonition-title">阅读说明</p>
+<p>本页解释每项改进<strong>为什么</strong>存在、<strong>改了什么</strong>、<strong>在代码哪里</strong>实现。无需 RL 基础。</p>
+</div>
+<h2 id="_1">算法来源<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>来源</th>
+<th style="text-align: center;">提出时间</th>
+<th>原始论文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DQN</strong></td>
+<td>DeepMind</td>
+<td style="text-align: center;">2015</td>
+<td>Mnih et al., "Human-level control through deep RL", <em>Nature</em></td>
+</tr>
+<tr>
+<td><strong>DDQN</strong></td>
+<td>DeepMind</td>
+<td style="text-align: center;">2016</td>
+<td>van Hasselt et al., "Deep RL with Double Q-learning", <em>AAAI</em></td>
+</tr>
+<tr>
+<td><strong>D3QN</strong></td>
+<td>学术界组合</td>
+<td style="text-align: center;">~2016</td>
+<td>Dueling (Wang et al., <em>ICML</em> 2016) + Double 的组合，无单一论文</td>
+</tr>
+<tr>
+<td><strong>ID3QN</strong></td>
+<td><strong>本文提出</strong></td>
+<td style="text-align: center;">-</td>
+<td>D3QN + PER + 奖励塑形 + 软更新 + Huber + 学习率调度</td>
+</tr>
+</tbody>
+</table>
+<p>其中 DQN、DDQN、D3QN 是已发表的成熟算法。ID3QN 是本文提出的<strong>工程组合方案</strong>，其中每一项单独技术都是已有的：</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>原始来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PER（优先经验回放）</td>
+<td>Schaul et al., 2016 (DeepMind)</td>
+</tr>
+<tr>
+<td>奖励塑形</td>
+<td>Ng et al., 1999（经典方法）</td>
+</tr>
+<tr>
+<td>软更新 (τ)</td>
+<td>Lillicrap et al., 2016（DDPG 论文）</td>
+</tr>
+<tr>
+<td>Huber 损失</td>
+<td>Huber, 1964（统计学）</td>
+</tr>
+<tr>
+<td>学习率调度</td>
+<td>深度学习标准实践</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">本文贡献的定位</p>
+<p>ID3QN 不是算法创新，而是<strong>针对 USV 导航场景的工程组合创新</strong>。本文的贡献是：在 USV 导航这个具体场景下，系统性地验证了哪些组件有用、哪些没用、组合效果如何。</p>
+</div>
+<hr />
+<h2 id="_2">递进路线图<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>不是 4 个独立算法，而是<strong>同一个算法框架的 4 个配置等级</strong>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>  Level 1              Level 2             Level 3             Level 4
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  +-----------+   +-------------+   +-------------+   +------------------+
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  |    DQN    |--&gt;|    DDQN     |--&gt;|    D3QN     |--&gt;|   ID3QN (Ours)   |
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  |   基线     |   |  +Double    |   |  +Dueling   |   |  +PER +Shaping   |
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  |           |   |             |   |             |   |  +SoftUpdate +LR |
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  +-----------+   +-------------+   +-------------+   +------------------+
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>       |                |                 |                    |
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   Q值过高估计        消除过估计        值-优势分离          全面增强
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   训练不稳定        但网络结构不变     更好的泛化          稀疏奖励下收敛
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>       |                |                 |                    |
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>   SR: 20%          SR: 4%           SR: 2%             SR: 83%
+</code></pre></div>
+<p><strong>为什么 DDQN/D3QN 反而比 DQN 差？</strong> 这看起来违反直觉，后文有详细解释。</p>
+<hr />
+<h2 id="level-1-dqn">Level 1: DQN 基线<a class="headerlink" href="#level-1-dqn" title="Permanent link">&para;</a></h2>
+<h3 id="_3">核心思想<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>DQN 用神经网络逼近最优 Q 值函数 Q*(s,a)："在状态 s 下，执行动作 a 有多好？"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>State s (184-dim)                          Q-values (5 actions)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>+--------------+    +----------+    +----------+    +------------+
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>| 180 LiDAR    |    |  FC 256  |    |  FC 256  |    | Q(s, left) |
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>| dist_target  |---&gt;|  + ReLU  |---&gt;|  + ReLU  |---&gt;| Q(s, fwd)  |
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>| angle_target |    |          |    |          |    | Q(s, right)|
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>| dist_obs     |    |  (47K)   |    |  (66K)   |    | ...        |
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>| angle_obs    |    +----------+    +----------+    +------------+
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>+--------------+                                     Total: ~114K params
+</code></pre></div>
+<h3 id="_4">两个关键机制<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p><strong>经验回放 (Experience Replay)</strong>：将转移 (s, a, r, s') 存入缓冲区，随机采样训练，打破样本间的时序相关性。</p>
+<p><strong>目标网络 (Target Network)</strong>：Q 网络的一个副本，更新频率更低，提供稳定的学习目标。</p>
+<h3 id="_5">训练循环<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>训练循环:
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  1. 智能体观察状态 s
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  2. 选动作: a = argmax Q(s, a; θ)  (ε-greedy 探索)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  3. 执行 a，得到奖励 r 和下一状态 s&#39;
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  4. 存储 (s, a, r, s&#39;, done) 到回放缓冲区
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  5. 从缓冲区随机采样一批数据
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  6. 计算目标: y = r + γ · max_a&#39; Q(s&#39;, a&#39;; θ⁻)      &lt;-- 目标网络 θ⁻
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  7. 最小化损失: L = (Q(s, a; θ) - y)²                 &lt;-- MSE 损失
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  8. 每 50 轮: θ⁻ ← θ                                  &lt;-- 硬拷贝
+</code></pre></div>
+<h3 id="dqn">DQN 的问题<a class="headerlink" href="#dqn" title="Permanent link">&para;</a></h3>
+<p>第 6 步的 <code>max</code> 运算同时承担了"选动作"和"估值"两个职责，导致系统性的 <strong>Q 值过高估计</strong> -- 网络总觉得某些动作比实际好。</p>
+<h3 id="_6">代码对照<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>文件</th>
+<th>位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-Network (114K)</td>
+<td><code>agents/network.py</code></td>
+<td><code>class QNetwork</code></td>
+</tr>
+<tr>
+<td>ε-greedy 选动作</td>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>select_action()</code></td>
+</tr>
+<tr>
+<td>经验回放缓冲区</td>
+<td><code>agents/replay_buffer.py</code></td>
+<td><code>class ReplayBuffer</code></td>
+</tr>
+<tr>
+<td>硬目标更新 (50 轮)</td>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>update_target_network()</code></td>
+</tr>
+<tr>
+<td>MSE 损失</td>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>loss_fn = nn.MSELoss</code></td>
+</tr>
+<tr>
+<td>配置文件</td>
+<td><code>config/baseline.yaml</code></td>
+<td><code>use_double_dqn: false, network_type: "q"</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="level-2-double-dqn-ddqn">Level 2: Double DQN (DDQN)<a class="headerlink" href="#level-2-double-dqn-ddqn" title="Permanent link">&para;</a></h2>
+<h3 id="_7">改了什么<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>DDQN 通过<strong>解耦</strong>动作选择和价值评估来解决过估计问题：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>DQN  目标: y = r + γ · max_a&#39; Q(s&#39;, a&#39;; θ⁻)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                        ^
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                        同一个网络既选又评
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>DDQN 目标: y = r + γ · Q(s&#39;, argmax_a&#39; Q(s&#39;, a&#39;; θ), θ⁻)
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                               ^                      ^
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                               在线网络选               目标网络评
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">类比</p>
+<p>两个独立评委。即使评委 A 高估了某个动作，评委 B 会给出更保守的评估，防止盲目乐观。</p>
+</div>
+<h3 id="4">代码变化：仅 4 行<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># agents/dqn_agent.py -&gt; learn() 方法</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_double_dqn</span><span class="p">:</span>    <span class="c1"># &lt;-- DDQN 路径</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>        <span class="c1"># 第 1 步：在线网络选出最优动作</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        <span class="n">best_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="p">(</span><span class="n">next_states_t</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        <span class="c1"># 第 2 步：目标网络评估该动作的价值</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        <span class="n">next_q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="p">(</span><span class="n">next_states_t</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>            <span class="mi">1</span><span class="p">,</span> <span class="n">best_actions</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="k">else</span><span class="p">:</span>                       <span class="c1"># &lt;-- DQN 路径</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>        <span class="c1"># 同一个网络同时选和评</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>        <span class="n">next_q_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="p">(</span><span class="n">next_states_t</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="config-diff-dqn-ddqn">Config Diff: DQN -&gt; DDQN<a class="headerlink" href="#config-diff-dqn-ddqn" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="w"> </span> # 仅 2 个开关变化：
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="gd">- use_double_dqn: false        -&gt; use_double_dqn: true</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="gd">- loss_fn: &quot;mse&quot;               -&gt; loss_fn: &quot;huber&quot;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w"> </span> # 其他完全一样：同样的网络、同样的缓冲区、同样的更新方式
+</code></pre></div>
+<h3 id="_8">代码对照<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>文件</th>
+<th>位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Double DQN 逻辑</td>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>learn()</code> -&gt; <code>if self.use_double_dqn</code></td>
+</tr>
+<tr>
+<td>开关</td>
+<td><code>config/ddqn.yaml</code></td>
+<td><code>use_double_dqn: true</code></td>
+</tr>
+<tr>
+<td>Huber 损失（新增）</td>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>nn.SmoothL1Loss</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="level-3-dueling-d3qn">Level 3: Dueling D3QN<a class="headerlink" href="#level-3-dueling-d3qn" title="Permanent link">&para;</a></h2>
+<h3 id="_9">改了什么<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>标准 Q 网络直接输出 Q(s,a)。但在很多状态下，<strong>动作选择并不重要</strong>（如 USV 在远离障碍物的开阔水域）。Dueling 架构将 Q 分解为两个分量：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>标准 Q-Network (DQN/DDQN):             Dueling Q-Network (D3QN/ID3QN):
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>State --&gt; [FC 256] --&gt; [FC 256] --&gt; Q(s,a)   State --&gt; [FC 256] --&gt; [FC 256] --+-&gt; [FC 128] -&gt; V(s)
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>                                              (共享特征)                       |    (价值: 1 标量)
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>           114K params                                                        |
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>                                                                              +-&gt; [FC 128] -&gt; A(s,a)
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>                                                                                   (优势: 5 个值)
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>                                                            135K params                 |
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>                                                                                        v
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>                                                                        Q(s,a) = V(s) + A(s,a) - mean(A)
+</code></pre></div>
+<ul>
+<li><strong>V(s)</strong> = "这个状态本身好不好？" (1 个标量)</li>
+<li><strong>A(s,a)</strong> = "这个动作比平均好多少？" (5 个值)</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">直觉</p>
+<p>开阔水域中所有动作差不多 -&gt; V(s) 捕获大部分价值，A(s,a) 接近零。靠近障碍物时，特定动作很关键 -&gt; A(s,a) 区分它们。这种分离让网络更高效地学习状态价值。</p>
+</div>
+<h3 id="_10">网络代码<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># agents/network.py -&gt; class DuelingQNetwork</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">DuelingQNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dim</span><span class="o">=</span><span class="mi">184</span><span class="p">,</span> <span class="n">action_dim</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>                 <span class="n">hidden_dims</span><span class="o">=</span><span class="p">[</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">],</span> <span class="n">stream_hidden</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="c1"># 共享特征提取器（和标准 Q 网络一样）</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">shared</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">184</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="p">)</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>        <span class="c1"># 价值流: shared -&gt; 128 -&gt; 1</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">value_stream</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>        <span class="p">)</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>        <span class="c1"># 优势流: shared -&gt; 128 -&gt; 5</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">advantage_stream</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>        <span class="p">)</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>        <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_stream</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>              <span class="c1"># (batch, 1)</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>        <span class="n">advantage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advantage_stream</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>      <span class="c1"># (batch, 5)</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>        <span class="c1"># 减去平均优势以保证可辨识性</span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>        <span class="n">q</span> <span class="o">=</span> <span class="n">value</span> <span class="o">+</span> <span class="n">advantage</span> <span class="o">-</span> <span class="n">advantage</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>        <span class="k">return</span> <span class="n">q</span>
+</code></pre></div>
+<h3 id="_11">参数量对比<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th style="text-align: center;">标准 Q-Net</th>
+<th style="text-align: center;">Dueling Q-Net</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共享 FC1 (184-&gt;256)</td>
+<td style="text-align: center;">47,360</td>
+<td style="text-align: center;">47,360</td>
+</tr>
+<tr>
+<td>共享 FC2 (256-&gt;256)</td>
+<td style="text-align: center;">65,792</td>
+<td style="text-align: center;">65,792</td>
+</tr>
+<tr>
+<td>输出层 (256-&gt;5)</td>
+<td style="text-align: center;">1,285</td>
+<td style="text-align: center;">--</td>
+</tr>
+<tr>
+<td>价值流 (256-&gt;128-&gt;1)</td>
+<td style="text-align: center;">--</td>
+<td style="text-align: center;">32,897</td>
+</tr>
+<tr>
+<td>优势流 (256-&gt;128-&gt;5)</td>
+<td style="text-align: center;">--</td>
+<td style="text-align: center;">33,413</td>
+</tr>
+<tr>
+<td><strong>总计</strong></td>
+<td style="text-align: center;"><strong>~114K</strong></td>
+<td style="text-align: center;"><strong>~135K</strong></td>
+</tr>
+</tbody>
+</table>
+<p>参数量仅增加 18%，对训练速度没有显著影响。</p>
+<h3 id="config-diff-ddqn-d3qn">Config Diff: DDQN -&gt; D3QN<a class="headerlink" href="#config-diff-ddqn-d3qn" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="w"> </span> # 仅 1 个开关变化：
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="gd">- network_type: &quot;q&quot;            -&gt; network_type: &quot;dueling&quot;</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w"> </span> # Double DQN、Huber 损失、硬更新 -- 全部保持不变
+</code></pre></div>
+<h3 id="_12">代码对照<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>文件</th>
+<th>位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DuelingQNetwork (135K)</td>
+<td><code>agents/network.py</code></td>
+<td><code>class DuelingQNetwork</code></td>
+</tr>
+<tr>
+<td>V + A - mean(A) 聚合</td>
+<td><code>agents/network.py</code></td>
+<td><code>DuelingQNetwork.forward()</code></td>
+</tr>
+<tr>
+<td>按配置选择网络</td>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>__init__()</code> -&gt; <code>if network_type == "dueling"</code></td>
+</tr>
+<tr>
+<td>配置文件</td>
+<td><code>config/d3qn.yaml</code></td>
+<td><code>network_type: "dueling"</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="level-4-id3qn">Level 4: ID3QN (本文算法)<a class="headerlink" href="#level-4-id3qn" title="Permanent link">&para;</a></h2>
+<h3 id="_13">改了什么<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>ID3QN 在 D3QN 基础上添加<strong>四项改进</strong>，每项针对一个具体弱点：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>D3QN 的弱点                            ID3QN 的解决方案
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>------------------------------         --------------------------------
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>1. 稀疏奖励: 智能体很难从              1. 奖励塑形: 密集信号引导早期探索
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>   每步 -0.1 中学到东西
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>2. 均匀采样: 稀有的成功经验            2. PER (SumTree): 高 TD 误差的
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>   和无用经验被同等对待                     转移被更频繁回放
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>3. 硬目标更新: θ⁻ 每 50 轮             3. 软更新 (Polyak): τ=0.005
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>   跳变一次，引起训练振荡                  每步平滑混合，消除跳变
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>4. 固定学习率: 同一个 LR               4. StepLR: 每 500 轮减半
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>   无法兼顾探索和精调阶段                  (5e-4 -&gt; 2.5e-4 -&gt; 1.25e-4 -&gt; 6.25e-5)
+</code></pre></div>
+<h3 id="1-reward-shaping">改进 1：奖励塑形 (Reward Shaping)<a class="headerlink" href="#1-reward-shaping" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>无塑形:                           有塑形:
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  Step 1: r = -0.1                Step 1: r = -0.1 + 0.3 (靠近) + 0.2 (朝向目标)
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>  Step 2: r = -0.1                Step 2: r = -0.1 + 0.1 (靠近) - 0.2 (靠近障碍物)
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>  Step 3: r = -0.1                Step 3: r = -0.1 + 0.4 (靠近) + 0.3 (朝向目标)
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  ...                             ...
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>  Step 86: r = +100 (到达!)       Step 86: r = +100 (到达!)
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>  问题: 85 步 -0.1 几乎无          优势: 每一步都有有意义的
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>  学习信号                          梯度信号
+</code></pre></div>
+<p><strong>三个塑形分量：</strong></p>
+<table>
+<thead>
+<tr>
+<th>分量</th>
+<th>公式</th>
+<th>作用</th>
+<th>代码位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>R_prog</strong> (进度)</td>
+<td>Δd × 2.0</td>
+<td>靠近目标给正奖励</td>
+<td><code>envs/reward.py</code> line 41</td>
+</tr>
+<tr>
+<td><strong>R_safe</strong> (安全)</td>
+<td>-(1 - d/3.0) × 0.5</td>
+<td>靠近障碍物给惩罚</td>
+<td><code>envs/reward.py</code> line 44-46</td>
+</tr>
+<tr>
+<td><strong>R_head</strong> (航向)</td>
+<td>0.3 × cos(θ)</td>
+<td>朝向目标给正奖励</td>
+<td><code>envs/reward.py</code> line 49-50</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># envs/reward.py -&gt; RewardCalculator.compute()</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_shaping</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="c1"># R_prog: 靠近目标 = 正奖励</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="n">progress</span> <span class="o">=</span> <span class="n">prev_dist_to_target</span> <span class="o">-</span> <span class="n">dist_to_target</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="n">reward</span> <span class="o">+=</span> <span class="n">progress</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">progress_scale</span>           <span class="c1"># Δd × 2.0</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="c1"># R_safe: 太靠近障碍物 = 惩罚</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="k">if</span> <span class="n">dist_to_nearest_obs</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_distance</span><span class="p">:</span>     <span class="c1"># &lt; 3.0m</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>        <span class="n">ratio</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">dist_to_nearest_obs</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_distance</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>        <span class="n">reward</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proximity_penalty</span> <span class="o">*</span> <span class="n">ratio</span>       <span class="c1"># -(1-d/3) × 0.5</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>    <span class="c1"># R_head: 朝向目标 = 奖励</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>    <span class="k">if</span> <span class="n">heading_to_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">heading_scale</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>        <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heading_scale</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">heading_to_target</span><span class="p">)</span>  <span class="c1"># 0.3 × cos(θ)</span>
+</code></pre></div>
+<h3 id="2-per">改进 2：优先经验回放 (PER)<a class="headerlink" href="#2-per" title="Permanent link">&para;</a></h3>
+<p>标准回放均匀采样所有转移。但稀有事件（成功导航、目标附近碰撞）比普通开阔水域步骤携带更多学习信号。</p>
+<p>PER 按 TD 误差 |δ|（"惊讶程度"）的比例采样：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>标准回放:                         PER:
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>所有转移等概率采样                  高 TD 误差的转移被更频繁采样
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>  +-------------------------+     +-------------------------+
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>  | ░░░░░░░░░░░░░░░░░░░░░░ |     | ░░░░████░░░░░░████████ |
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>  | routine    routine      |     | routine  collision  success |
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>  | P = 1/N    P = 1/N      |     | P ∝ |δ|^α  (α=0.6)    |
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>  +-------------------------+     +-------------------------+
+</code></pre></div>
+<p><strong>SumTree 数据结构：</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>                [Total = 12.0]              &lt;-- O(1) 总和查询
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>               /              \
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>           [7.0]             [5.0]          &lt;-- 内部求和节点
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>          /     \           /     \
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>       [3.0]  [4.0]     [2.0]  [3.0]       &lt;-- 叶节点优先级 (|δ| + ε)^α
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>        t1     t2        t3     t4
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>  插入/更新: O(log N)  &lt;-- 从叶节点向上传播
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>  采样:      O(log N)  &lt;-- 从根节点向下遍历
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>  vs. 线性扫描: O(N)   &lt;-- N=200,000 时快 10³ 倍
+</code></pre></div>
+<p><strong>重要性采样 (IS) 校正</strong>：PER 改变了数据分布，引入偏差。IS 权重校正此偏差：</p>
+<p>w_i = (1 / (N × P(i)))^β，其中 β 从 0.4 退火到 1.0。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># agents/dqn_agent.py -&gt; learn() 方法</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="c1"># IS 权重参与损失计算，校正 PER 引入的采样偏差</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">is_weights_t</span> <span class="o">*</span> <span class="n">element_loss</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="c1"># 训练后用新的 TD 误差更新优先级</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="bp">self</span><span class="o">.</span><span class="n">replay_buffer</span><span class="o">.</span><span class="n">update_priorities</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">td_errors</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>代码文件</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agents/per_buffer.py</code></td>
+<td><code>class SumTree</code> -- O(log N) 操作的二叉树</td>
+</tr>
+<tr>
+<td><code>agents/per_buffer.py</code></td>
+<td><code>class PrioritizedReplayBuffer</code> -- 比例采样 + IS 权重</td>
+</tr>
+<tr>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>learn()</code> -&gt; <code>is_weights_t * element_loss</code> -- 加权损失</td>
+</tr>
+<tr>
+<td><code>agents/dqn_agent.py</code></td>
+<td><code>learn()</code> -&gt; <code>update_priorities(indices, td_errors)</code> -- 更新优先级</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3">改进 3：软目标网络更新<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>DQN/DDQN/D3QN 每 50 轮<strong>硬拷贝</strong>整个网络到目标网络，导致目标 Q 值突变：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>硬更新 (DQN/DDQN/D3QN):              软更新 (ID3QN):
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>θ⁻  --------+  --------+  -----     θ⁻  -------------------------
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>             |          |                     (平滑混合)
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>             +----------+------     θ⁻ &lt;- 0.005·θ + 0.995·θ⁻
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>             ^          ^                ^  每次 learn 都微调
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>          ep 50      ep 100              小幅推动，无跳变
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>          大跳变      大跳变
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># agents/dqn_agent.py -&gt; _soft_update()</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">_soft_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Polyak averaging: θ⁻ = τ·θ + (1-τ)·θ⁻&quot;&quot;&quot;</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="k">for</span> <span class="n">target_param</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_network</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="p">):</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>        <span class="n">target_param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">*</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="n">target_param</span><span class="o">.</span><span class="n">data</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>        <span class="p">)</span>   <span class="c1"># τ = 0.005: 每步仅混入 0.5% 的在线网络</span>
+</code></pre></div>
+<h3 id="4_1">改进 4：学习率调度<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h3>
+<p>固定学习率无法兼顾快速收敛（需大 LR）和精细调优（需小 LR）。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>Episode:    0        500       1000      1500      2000
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>LR:        5e-4 --&gt; 2.5e-4 --&gt; 1.25e-4 --&gt; 6.25e-5
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>阶段:      探索      收敛       精调       打磨
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># agents/dqn_agent.py -&gt; __init__()</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="k">if</span> <span class="n">lr_schedule</span> <span class="o">==</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">StepLR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="c1"># 每 500 轮: lr *= 0.5</span>
+</code></pre></div>
+<h3 id="config-diff-d3qn-id3qn">Config Diff: D3QN -&gt; ID3QN (全部变化)<a class="headerlink" href="#config-diff-d3qn-id3qn" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="w"> </span> training:
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w"> </span>   network_type: &quot;dueling&quot;             # 不变
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w"> </span>   use_double_dqn: true                # 不变
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="gd">-   use_per: false                    -&gt; use_per: true</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="gd">-   use_soft_update: false            -&gt; use_soft_update: true</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="gi">+   tau: 0.005                          # 新增: 软更新系数</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w"> </span>   loss_fn: &quot;huber&quot;                    # 不变
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="gd">-   lr: 0.001                         -&gt; lr: 0.0005</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="gd">-   lr_schedule: &quot;none&quot;               -&gt; lr_schedule: &quot;step&quot;</span>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="gi">+   lr_step_size: 500                   # 新增: 每 500 轮衰减</span>
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="gi">+   lr_gamma: 0.5                       # 新增: 减半</span>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="gi">+   per_alpha: 0.6                      # 新增: PER 优先化程度</span>
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="gi">+   per_beta_start: 0.4                 # 新增: IS 权重退火起点</span>
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="gi">+   per_beta_end: 1.0                   # 新增: IS 权重退火终点</span>
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w"> </span> reward:
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="gd">-   enable_shaping: false             -&gt; enable_shaping: true</span>
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="gi">+   progress_scale: 2.0                 # 新增: R_prog 权重</span>
+<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="gi">+   safety_distance: 3.0                # 新增: R_safe 距离阈值</span>
+<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="gi">+   proximity_penalty: 0.5              # 新增: R_safe 惩罚系数</span>
+<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="gi">+   heading_scale: 0.3                  # 新增: R_head 权重</span>
+</code></pre></div>
+<hr />
+<h2 id="ddqnd3qn">为什么 DDQN/D3QN 反而更差<a class="headerlink" href="#ddqnd3qn" title="Permanent link">&para;</a></h2>
+<p>这是最违反直觉的结果。DDQN/D3QN 理论上优于 DQN，但成功率 (4%, 2%) 反而低于 DQN (20%)。</p>
+<p><strong>根因：极端稀疏奖励</strong></p>
+<p>在 C4 环境中，USV 只有到达目标 (+100) 或碰撞 (-100) 时才有明确信号，每步仅扣 0.1。没有奖励塑形时：</p>
+<ul>
+<li><strong>DQN</strong> 过高估计 Q 值 -&gt; 意外地探索更激进 -&gt; 碰巧到达目标 20%</li>
+<li><strong>DDQN</strong> 纠正了过估计 -&gt; 更保守 -&gt; 探索不足 -&gt; 成功率仅 4%</li>
+<li><strong>D3QN</strong> 更精确的 Q 估计 -&gt; 更保守 -&gt; 更难找到目标 -&gt; 仅 2%</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">类比理解</p>
+<p>DQN 像一个盲目乐观的新手，什么都敢试，偶尔误打误撞成功。DDQN/D3QN 是"纠正了乐观"的理性人，在没有路标（密集奖励）的情况下反而更谨小慎微，不敢探索。</p>
+</div>
+<p><strong>ID3QN 的突破</strong>：奖励塑形提供了密集引导信号（R_prog: "越来越近是好事", R_safe: "太靠近障碍物是坏事", R_head: "朝向目标是好事"），把稀疏奖励问题转化为可学习的信号。</p>
+<hr />
+<h2 id="_14">完整对照表<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="_15">特性矩阵<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th style="text-align: center;">DQN</th>
+<th style="text-align: center;">DDQN</th>
+<th style="text-align: center;">D3QN</th>
+<th style="text-align: center;">ID3QN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>网络</td>
+<td style="text-align: center;">Q-Net (114K)</td>
+<td style="text-align: center;">Q-Net (114K)</td>
+<td style="text-align: center;">Dueling (135K)</td>
+<td style="text-align: center;">Dueling (135K)</td>
+</tr>
+<tr>
+<td>Double DQN</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+<td style="text-align: center;">Y</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td>PER (SumTree)</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td>奖励塑形</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y (3 分量)</td>
+</tr>
+<tr>
+<td>损失函数</td>
+<td style="text-align: center;">MSE</td>
+<td style="text-align: center;">Huber</td>
+<td style="text-align: center;">Huber</td>
+<td style="text-align: center;">Huber</td>
+</tr>
+<tr>
+<td>目标更新</td>
+<td style="text-align: center;">硬拷贝/50轮</td>
+<td style="text-align: center;">硬拷贝/50轮</td>
+<td style="text-align: center;">硬拷贝/50轮</td>
+<td style="text-align: center;">软更新 τ=0.005</td>
+</tr>
+<tr>
+<td>学习率</td>
+<td style="text-align: center;">固定 1e-3</td>
+<td style="text-align: center;">固定 1e-3</td>
+<td style="text-align: center;">固定 1e-3</td>
+<td style="text-align: center;">StepLR 5e-4</td>
+</tr>
+<tr>
+<td>梯度裁剪</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_16">完整性能<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th style="text-align: center;">DQN</th>
+<th style="text-align: center;">DDQN</th>
+<th style="text-align: center;">D3QN</th>
+<th style="text-align: center;"><strong>ID3QN</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>成功率</td>
+<td style="text-align: center;">20.0%</td>
+<td style="text-align: center;">4.0%</td>
+<td style="text-align: center;">2.0%</td>
+<td style="text-align: center;"><strong>83.0%</strong></td>
+</tr>
+<tr>
+<td>平均奖励</td>
+<td style="text-align: center;">-57.4</td>
+<td style="text-align: center;">-101.4</td>
+<td style="text-align: center;">-101.2</td>
+<td style="text-align: center;"><strong>84.0</strong></td>
+</tr>
+<tr>
+<td>平均步数</td>
+<td style="text-align: center;">275</td>
+<td style="text-align: center;">115</td>
+<td style="text-align: center;">163</td>
+<td style="text-align: center;"><strong>86</strong></td>
+</tr>
+<tr>
+<td>收敛轮次</td>
+<td style="text-align: center;">N/A</td>
+<td style="text-align: center;">N/A</td>
+<td style="text-align: center;">N/A</td>
+<td style="text-align: center;"><strong>Ep 294</strong></td>
+</tr>
+<tr>
+<td>碰撞率</td>
+<td style="text-align: center;">33.2%</td>
+<td style="text-align: center;">49.7%</td>
+<td style="text-align: center;">50.1%</td>
+<td style="text-align: center;"><strong>19.3%</strong></td>
+</tr>
+<tr>
+<td>出界率</td>
+<td style="text-align: center;">37.2%</td>
+<td style="text-align: center;">43.9%</td>
+<td style="text-align: center;">40.9%</td>
+<td style="text-align: center;"><strong>8.3%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_17">结果解读<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
+<p>DDQN 和 D3QN 比 DQN 基线<strong>还差</strong>（4% 和 2% vs 20%），这不是 bug，而是一个重要发现：</p>
+<ul>
+<li>在 USV 导航这种<strong>稀疏奖励</strong>问题中，单纯改进网络结构或降低过估计<strong>不够</strong></li>
+<li>真正的突破来自 ID3QN 的<strong>工程组合拳</strong>：PER 让智能体优先复习失败经验，奖励塑形提供中间引导信号，两者缺一不可</li>
+<li>消融实验也证实了这一点：去掉奖励塑形，成功率从 83% 直接跌到 2%（详见<a href="../../environment/reward/">奖励函数</a>页面的消融结果）</li>
+</ul>
+<p>这个实证结论对 USV 领域有参考价值 -- 在稀疏奖励的导航任务中，<strong>奖励工程比网络架构更重要</strong>。</p>
+<hr />
+<h2 id="_18">消融实验：哪项改进最重要<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h2>
+<p>消融实验每次禁用一项改进（500 轮），观察成功率变化：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>影响力排序:
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>  奖励塑形  ████████████████████████████████████ 最关键
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>  软更新    ████████████████████
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>  PER      ████████████████
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>  学习率调度 ██████████████
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>  航向奖励  ██████████              最小影响
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">关键洞察</p>
+<p>没有奖励塑形，ID3QN 降至 12% 成功率（比 DQN 基线还差）。塑形是<strong>基石</strong>，使所有其他改进得以发挥作用。在稀疏奖励的导航任务中，提供密集引导信号是最重要的设计选择。</p>
+</div>
+<hr />
+<h2 id="_19">算法开关<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<p>4 种算法在<strong>同一份代码</strong>（1 个 <code>DQNAgent</code> 类）中实现，通过 YAML 配置开关组合切换：</p>
+<table>
+<thead>
+<tr>
+<th>开关</th>
+<th style="text-align: center;">DQN</th>
+<th style="text-align: center;">DDQN</th>
+<th style="text-align: center;">D3QN</th>
+<th style="text-align: center;">ID3QN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>use_double_dqn</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+<td style="text-align: center;">Y</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td><code>network_type: dueling</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td><code>use_per</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td><code>enable_shaping</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td><code>use_soft_update</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td><code>lr_schedule: step</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+</tr>
+<tr>
+<td><code>loss_fn: huber</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Y</td>
+<td style="text-align: center;">Y</td>
+<td style="text-align: center;">Y</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_20">代码文件速查<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>实现内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agents/network.py</code></td>
+<td><code>QNetwork</code> (DQN/DDQN) + <code>DuelingQNetwork</code> (D3QN/ID3QN)</td>
+</tr>
+<tr>
+<td><code>agents/dqn_agent.py</code></td>
+<td>统一智能体：ε-greedy, learn(), 软/硬更新, 全部开关</td>
+</tr>
+<tr>
+<td><code>agents/replay_buffer.py</code></td>
+<td>标准均匀回放 (DQN/DDQN/D3QN)</td>
+</tr>
+<tr>
+<td><code>agents/per_buffer.py</code></td>
+<td>SumTree + 优先回放 (ID3QN)</td>
+</tr>
+<tr>
+<td><code>envs/reward.py</code></td>
+<td>稀疏奖励 + 可选塑形 (R_prog, R_safe, R_head)</td>
+</tr>
+<tr>
+<td><code>config/baseline.yaml</code></td>
+<td>DQN：全部开关关闭</td>
+</tr>
+<tr>
+<td><code>config/ddqn.yaml</code></td>
+<td>+Double DQN, +Huber</td>
+</tr>
+<tr>
+<td><code>config/d3qn.yaml</code></td>
+<td>+Dueling 网络</td>
+</tr>
+<tr>
+<td><code>config/improved_d3qn.yaml</code></td>
+<td>+PER, +塑形, +软更新, +学习率调度</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Zebedee2021" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.highlight", "search.suggest", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
