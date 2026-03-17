@@ -1,6 +1,6 @@
 # SpaceR-USV：C4 官方平台
 
-C4 官方仿真平台 SpaceR-USV 由北京理工大学 SPAIT Lab（周治国团队）开发。
+C4 官方仿真平台 SpaceR-USV 由北京理工大学 SPAIT Lab 开发。
 
 ## 架构：三合一
 
