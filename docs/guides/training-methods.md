@@ -161,6 +161,26 @@ compare-results-ep2000-seed0/
 
 免费计划私有仓库每月 **2,000 分钟**。一次完整对比训练约 90 分钟，额度充裕。
 
+### 跨仓库自动推送
+
+当步骤 5 中勾选 `upload_to_data_repo = true` 时，训练完成后结果会通过 **SSH Deploy Key** 自动推送到 c4nav-data 仓库：
+
+```
+GitHub Actions VM
+  |
+  +-- 训练完成，生成 CSV / 图表 / 模型
+  |
+  +-- 使用 SSH Deploy Key 认证
+  |   (密钥存储在 c4nav-core 的 Repository Secrets 中)
+  |
+  +-- git push 到 c4nav-data 仓库
+      |
+      +-- c4nav-demo 自动更新（读取 c4nav-data 的图表）
+      +-- c4nav-site 文档可引用最新数据
+```
+
+不勾选则仅生成 Artifact ZIP，不影响 c4nav-data 仓库。
+
 !!! tip "什么时候用 GitHub Actions"
     - 正式论文出图（结果自动归档到 c4nav-data）
     - 没有本地 GPU 时的主要训练方式
@@ -259,15 +279,42 @@ files.download('results.zip')
 
 无论使用哪种训练方式，运行的都是同一套代码：
 
+### 详细文件架构
+
 ```
 c4nav-core/
-+-- config/                    <-- 你改这里（算法行为开关）
-+-- agents/                    <-- 需要时改这里（新增技术）
-+-- envs/                      <-- 稳定层（一般不改）
-+-- scripts/                   <-- 稳定层（几乎不改）
-+-- viz/                       <-- 稳定层（几乎不改）
-+-- .github/workflows/         <-- 稳定层（几乎不改）
++-- config/                        <-- 你改这里（算法行为开关）
+|   +-- baseline.yaml               <-- Algorithm 1: DQN
+|   +-- ddqn.yaml                   <-- Algorithm 2: Double DQN
+|   +-- d3qn.yaml                   <-- Algorithm 3: D3QN
+|   +-- improved_d3qn.yaml          <-- Algorithm 4: ID3QN (你的改进)
+|
++-- agents/                        <-- 需要时改这里（新增技术）
+|   +-- network.py                  <-- 神经网络结构 (QNetwork + DuelingQNetwork)
+|   +-- dqn_agent.py                <-- 智能体逻辑 (特性开关)
+|   +-- per_buffer.py               <-- 优先经验回放 (SumTree)
+|   +-- replay_buffer.py            <-- 标准经验回放
+|
++-- envs/                          <-- 稳定层（一般不改）
+|   +-- usv_env.py                  <-- Gym 仿真环境
+|   +-- usv_dynamics.py             <-- 无人艇动力学
+|   +-- lidar_sensor.py             <-- 虚拟 LiDAR
+|   +-- reward.py                   <-- 奖励函数
+|   +-- scene.py                    <-- 障碍物场景生成
+|
++-- scripts/                       <-- 稳定层（几乎不改）
+|   +-- train_compare.py            <-- 训练循环、日志、CSV 导出
+|
++-- viz/                           <-- 稳定层（几乎不改）
+|   +-- plot_comparison.py          <-- 图表生成
+|
++-- .github/workflows/             <-- 稳定层（几乎不改）
+    +-- smoke-test.yml              <-- 推送自动测试
+    +-- train-compare.yml           <-- 4 算法对比训练
+    +-- train-ablation.yml          <-- 消融实验
 ```
+
+### 分层原则
 
 | 层 | 内容 | 谁改 | 频率 |
 |---|---|---|---|
@@ -275,5 +322,71 @@ c4nav-core/
 | `agents/` | 网络 + 智能体代码 | 算法开发者 | 新增技术时 |
 | `envs/` | 仿真环境 | 很少 | 环境规则变更时 |
 | `scripts/` | 训练循环 | 几乎不改 | 框架级变更 |
+| `viz/` | 图表代码 | 几乎不改 | 样式调整时 |
+| `.github/workflows/` | 云端自动化 | 几乎不改 | 基础设施变更时 |
+
+### 配置如何控制算法
+
+**YAML 配置**是核心接口。仅通过切换开关，就能定义完全不同的算法，**无需修改任何 Python 代码**：
+
+```yaml
+# ── DQN Baseline ──               # ── ID3QN (Improved) ──
+network_type: "q"                   network_type: "dueling"       # Dueling 网络
+use_double_dqn: false               use_double_dqn: true          # Double DQN
+use_per: false                      use_per: true                 # 优先回放
+use_soft_update: false              use_soft_update: true         # Polyak 软更新
+loss_fn: "mse"                      loss_fn: "huber"              # Huber 损失
+lr_schedule: "none"                 lr_schedule: "step"           # 学习率衰减
+lr: 0.001                           lr: 0.0005                    # 更小的初始 LR
+
+# 奖励塑形 (reward 节)
+enable_shaping: false               enable_shaping: true          # 密集奖励
+heading_scale: 0.0                  heading_scale: 0.3            # 航向对齐
+```
+
+### 开发者工作流
+
+```
++-----------------------------------------------------------+
+|  开发者工作流                                                |
+|                                                            |
+|  1. 修改 config/ YAML 或 agents/ 代码                       |
+|     (调整算法参数或新增技术)                                   |
+|                                                            |
+|  2. git push                                               |
+|     +---> Smoke Test 自动运行 (10 轮, ~2 分钟)               |
+|           确认代码无误                                       |
+|                                                            |
+|  3. 手动触发 Train Compare                                   |
+|     +---> 4 种算法自动训练 + 对比                             |
+|           生成 CSV / 图表 / 模型权重                          |
+|                                                            |
+|  4. 下载结果，查看图表，判断算法优劣                            |
+|                                                            |
+|  5. 迭代：回到第 1 步继续改进                                 |
++-----------------------------------------------------------+
+```
+
+### 示例：新增一个算法变体
+
+如果你想测试一个新想法（如加入 Noisy Networks），只需要 3 步：
+
+**步骤 1**：创建 `config/my_variant.yaml`（从 `improved_d3qn.yaml` 复制，修改开关）
+
+**步骤 2**：如果需要，在 `agents/network.py` 中添加新的网络类
+
+**步骤 3**：在 `scripts/train_compare.py` 中注册：
+
+```python
+ALGORITHM_CONFIGS = {
+    "baseline": "baseline.yaml",
+    "ddqn": "ddqn.yaml",
+    "d3qn": "d3qn.yaml",
+    "improved": "improved_d3qn.yaml",
+    "my_variant": "my_variant.yaml",     # <-- 加一行
+}
+```
+
+然后 `git push` -> 触发训练 -> 对比结果。训练循环、日志记录、CSV 导出、图表生成、云端自动化**全部自动适配**你的新变体。
 
 **核心理念：你只需要关注算法设计，训练、对比、可视化已经完全自动化。**
