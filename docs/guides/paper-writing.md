@@ -128,7 +128,7 @@ for alg in algorithms:
 
 ### 步骤 2：运行训练
 
-按照 [云端训练](cloud-training.md) 指南触发 `Train Compare` 工作流。
+按照 [训练方式](training-methods.md) 页面选择本地、GitHub Actions 或 Colab 触发训练。
 
 ### 步骤 3：下载并分析结果
 
