@@ -2,6 +2,11 @@
 
 C4 官方仿真平台 SpaceR-USV 由北京理工大学 SPAIT Lab 开发。
 
+<figure markdown="span">
+  ![USV130 实船模型](assets/usv130-physical.jpg){ width="480" }
+  <figcaption>USV130 实船模型 —— SpaceR-USV 平台的物理原型</figcaption>
+</figure>
+
 ## 架构：三合一
 
 ```
@@ -26,7 +31,35 @@ C4 官方仿真平台 SpaceR-USV 由北京理工大学 SPAIT Lab 开发。
 
 **核心要点：** Unity 是一个纯仿真器，而非训练平台。训练算法通过 ROS 在外部运行，这使得平台与算法解耦。
 
+## 仿真环境
+
+Unity 3D 引擎渲染的北湖仿真场景，支持俯视全局视角和船载第一视角两种观测模式。
+
+<div class="grid cards" markdown>
+
+<figure markdown="span">
+  ![北湖场景俯视图](assets/unity-beihu-overview.png)
+  <figcaption>北湖场景 —— 俯视全局视角</figcaption>
+</figure>
+
+<figure markdown="span">
+  ![船载第一视角](assets/unity-beihu-ship-view.png)
+  <figcaption>船载第一视角 —— USV 前方实时画面</figcaption>
+</figure>
+
+</div>
+
+<figure markdown="span">
+  ![USV 自主航行](assets/unity-usv-navigation.png){ width="600" }
+  <figcaption>USV 在仿真水域中自主航行</figcaption>
+</figure>
+
 ## USV130 参数对齐
+
+<figure markdown="span">
+  ![USV130 竞赛用船](assets/usv130-prototype.png){ width="400" }
+  <figcaption>USV130 竞赛用船 —— 搭载 GPS、IMU、LiDAR 及通信天线</figcaption>
+</figure>
 
 | 参数 | USV130 实船 | c4nav-core 配置 | 是否匹配 |
 |------|:---------:|:--------------:|:-------:|
