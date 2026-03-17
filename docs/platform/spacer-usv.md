@@ -2,11 +2,6 @@
 
 C4 官方仿真平台 SpaceR-USV 由北京理工大学 SPAIT Lab 开发。
 
-<figure markdown="span">
-  ![USV130 实船模型](assets/usv130-physical.jpg){ width="480" }
-  <figcaption>USV130 实船模型 —— SpaceR-USV 平台的物理原型</figcaption>
-</figure>
-
 ## 架构：三合一
 
 ```
